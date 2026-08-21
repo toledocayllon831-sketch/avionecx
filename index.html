@@ -1,0 +1,2451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>AVIONECX — EC</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#02030a;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    touch-action:none;
+}
+
+#game{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+#loading{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(circle at center,rgba(0,234,255,.15),transparent 35%),
+        #02030a;
+    transition:.6s;
+}
+
+#loading.hide{
+    opacity:0;
+    pointer-events:none;
+}
+
+.loading-logo{
+    font-size:70px;
+    font-weight:1000;
+    letter-spacing:12px;
+    background:linear-gradient(90deg,#00eaff,#7c3aed,#ff35c7);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.loading-text{
+    margin-top:18px;
+    color:#8793ad;
+    letter-spacing:4px;
+    font-size:12px;
+}
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:5000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background:
+        radial-gradient(circle at 50% 35%,rgba(0,234,255,.12),transparent 35%),
+        linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.82));
+    transition:.6s;
+}
+
+#menu.hide{
+    opacity:0;
+    pointer-events:none;
+}
+
+.menu-box{
+    width:min(650px,94vw);
+    padding:45px 30px;
+    text-align:center;
+    border-radius:30px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(4,8,25,.78);
+    backdrop-filter:blur(25px);
+    box-shadow:
+        0 0 100px rgba(0,234,255,.12),
+        inset 0 0 50px rgba(255,255,255,.02);
+}
+
+.ec-small{
+    color:#00eaff;
+    font-size:11px;
+    letter-spacing:5px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.title{
+    font-size:clamp(50px,12vw,100px);
+    line-height:.9;
+    font-weight:1000;
+    letter-spacing:5px;
+    background:linear-gradient(90deg,#fff,#00eaff,#7c3aed,#ff35c7);
+    -webkit-background-clip:text;
+    color:transparent;
+    text-shadow:0 0 40px rgba(0,234,255,.25);
+}
+
+.subtitle{
+    margin-top:15px;
+    font-size:20px;
+    color:#c6cede;
+    letter-spacing:4px;
+}
+
+.description{
+    color:#7f8aa2;
+    line-height:1.7;
+    margin:25px auto;
+    max-width:520px;
+}
+
+.play{
+    border:0;
+    padding:17px 40px;
+    border-radius:16px;
+    cursor:pointer;
+    font-weight:1000;
+    font-size:15px;
+    letter-spacing:2px;
+    color:#02030a;
+    background:linear-gradient(90deg,#00eaff,#7c3aed,#ff35c7);
+    box-shadow:0 0 35px rgba(0,234,255,.3);
+    transition:.2s;
+}
+
+.play:hover{
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 0 55px rgba(0,234,255,.5);
+}
+
+.menu-info{
+    margin-top:25px;
+    color:#68748d;
+    font-size:12px;
+    line-height:1.8;
+}
+
+#hud{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    pointer-events:none;
+    opacity:0;
+    transition:.4s;
+}
+
+#hud.active{
+    opacity:1;
+}
+
+.top{
+    position:absolute;
+    top:18px;
+    left:18px;
+    right:18px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.hud-card{
+    padding:11px 15px;
+    min-width:130px;
+    border-radius:14px;
+    background:rgba(3,7,20,.65);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(14px);
+    box-shadow:0 0 25px rgba(0,234,255,.06);
+}
+
+.hud-label{
+    color:#68758e;
+    font-size:9px;
+    letter-spacing:2px;
+    margin-bottom:5px;
+}
+
+.hud-value{
+    font-weight:900;
+    font-size:16px;
+}
+
+#score{
+    color:#00eaff;
+}
+
+#speed{
+    color:#a78bfa;
+}
+
+#lives{
+    color:#ff668c;
+}
+
+#combo{
+    color:#ffd166;
+}
+
+.health{
+    position:absolute;
+    top:78px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(360px,65vw);
+    height:8px;
+    border-radius:10px;
+    overflow:hidden;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+#healthBar{
+    height:100%;
+    width:100%;
+    background:linear-gradient(90deg,#ff315a,#ffd166,#00ffb3);
+    transition:.2s;
+}
+
+#mission{
+    position:absolute;
+    top:100px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:8px 15px;
+    border-radius:20px;
+    background:rgba(0,0,0,.42);
+    border:1px solid rgba(255,255,255,.08);
+    color:#9ca8bd;
+    font-size:11px;
+    white-space:nowrap;
+}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:22px;
+    height:22px;
+    transform:translate(-50%,-50%);
+    border:1px solid rgba(0,234,255,.7);
+    border-radius:50%;
+    box-shadow:0 0 15px rgba(0,234,255,.3);
+}
+
+#crosshair:before,
+#crosshair:after{
+    content:"";
+    position:absolute;
+    background:rgba(255,255,255,.7);
+}
+
+#crosshair:before{
+    width:35px;
+    height:1px;
+    left:-8px;
+    top:10px;
+}
+
+#crosshair:after{
+    height:35px;
+    width:1px;
+    left:10px;
+    top:-8px;
+}
+
+#announcement{
+    position:absolute;
+    left:50%;
+    top:30%;
+    transform:translate(-50%,-50%) scale(.9);
+    opacity:0;
+    padding:20px 30px;
+    min-width:260px;
+    text-align:center;
+    border-radius:20px;
+    background:rgba(3,7,20,.9);
+    border:1px solid rgba(0,234,255,.25);
+    box-shadow:0 0 50px rgba(0,234,255,.12);
+    transition:.3s;
+}
+
+#announcement.show{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1);
+}
+
+#announcement h2{
+    color:#00eaff;
+    margin-bottom:7px;
+}
+
+#announcement p{
+    color:#9ca8bd;
+    font-size:13px;
+}
+
+#achievement{
+    position:absolute;
+    right:20px;
+    top:100px;
+    width:270px;
+    padding:15px;
+    border-radius:18px;
+    background:rgba(8,12,30,.94);
+    border:1px solid rgba(255,209,102,.35);
+    box-shadow:0 0 35px rgba(255,209,102,.12);
+    transform:translateX(120%);
+    transition:.5s cubic-bezier(.2,.8,.2,1);
+}
+
+#achievement.show{
+    transform:translateX(0);
+}
+
+.ach-title{
+    color:#ffd166;
+    font-size:10px;
+    letter-spacing:2px;
+    margin-bottom:7px;
+}
+
+.ach-name{
+    font-size:17px;
+    font-weight:1000;
+}
+
+.ach-desc{
+    color:#8894aa;
+    font-size:11px;
+    margin-top:5px;
+}
+
+#bottom{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+}
+
+.help{
+    padding:10px 14px;
+    border-radius:14px;
+    background:rgba(3,7,20,.6);
+    border:1px solid rgba(255,255,255,.08);
+    color:#748098;
+    font-size:11px;
+}
+
+#pause{
+    border:0;
+    pointer-events:auto;
+    cursor:pointer;
+    padding:10px 16px;
+    border-radius:13px;
+    color:#fff;
+    background:rgba(3,7,20,.7);
+    border:1px solid rgba(255,255,255,.12);
+}
+
+#mobile{
+    position:fixed;
+    inset:0;
+    z-index:300;
+    pointer-events:none;
+    display:none;
+}
+
+.mbtn{
+    position:absolute;
+    width:58px;
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    color:#fff;
+    font-weight:1000;
+    background:rgba(3,7,20,.6);
+    border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(10px);
+    pointer-events:auto;
+}
+
+#mUp{left:80px;bottom:145px}
+#mDown{left:80px;bottom:20px}
+#mLeft{left:15px;bottom:82px}
+#mRight{left:145px;bottom:82px}
+
+#mFire{
+    right:25px;
+    bottom:85px;
+    width:80px;
+    height:80px;
+    background:rgba(255,55,100,.16);
+    border-color:rgba(255,55,100,.4);
+}
+
+#mBoost{
+    right:30px;
+    bottom:180px;
+}
+
+#gameOver{
+    position:fixed;
+    inset:0;
+    z-index:6000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(12px);
+}
+
+.gameover-box{
+    width:min(450px,92vw);
+    padding:35px;
+    text-align:center;
+    border-radius:28px;
+    background:rgba(5,9,25,.95);
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.gameover-box h1{
+    color:#ff4d78;
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.final-score{
+    font-size:45px;
+    font-weight:1000;
+    color:#00eaff;
+    margin:15px 0;
+}
+
+.restart{
+    border:0;
+    padding:15px 30px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:1000;
+    background:linear-gradient(90deg,#00eaff,#7c3aed);
+    color:#02030a;
+}
+
+#pauseScreen{
+    position:fixed;
+    inset:0;
+    z-index:5500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(8px);
+}
+
+.pause-box{
+    text-align:center;
+    padding:35px;
+    border-radius:25px;
+    background:rgba(4,8,25,.9);
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.pause-box h2{
+    color:#00eaff;
+    margin-bottom:10px;
+}
+
+@media(max-width:800px){
+    #mobile{
+        display:block;
+    }
+
+    .help{
+        display:none;
+    }
+
+    #bottom{
+        bottom:15px;
+    }
+
+    .hud-card{
+        min-width:auto;
+        padding:9px 10px;
+    }
+
+    .hud-label{
+        font-size:8px;
+    }
+
+    .hud-value{
+        font-size:13px;
+    }
+
+    #mission{
+        top:100px;
+        font-size:9px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">
+    <div class="loading-logo">EC</div>
+    <div class="loading-text">CARREGANDO AVIONECX...</div>
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="menu">
+    <div class="menu-box">
+        <div class="ec-small">ESTÚDIO CENTRAL BRASILEIRO</div>
+        <div class="title">AVIONECX</div>
+        <div class="subtitle">MISSÃO AÉREA 3D</div>
+
+        <p class="description">
+            Pilote a aeronave experimental da ECx,
+            desvie dos obstáculos, destrua ameaças,
+            aumente sua velocidade e desbloqueie conquistas.
+        </p>
+
+        <button class="play" id="playButton">
+            ▶ INICIAR MISSÃO
+        </button>
+
+        <div class="menu-info">
+            WASD / SETAS — Pilotar<br>
+            SPACE — Atirar<br>
+            SHIFT — Turbo<br>
+            P — Pausar
+        </div>
+    </div>
+</div>
+
+<div id="hud">
+
+    <div class="top">
+
+        <div class="hud-card">
+            <div class="hud-label">PONTUAÇÃO</div>
+            <div class="hud-value" id="score">0</div>
+        </div>
+
+        <div class="hud-card">
+            <div class="hud-label">VELOCIDADE</div>
+            <div class="hud-value" id="speed">0 KM/H</div>
+        </div>
+
+        <div class="hud-card">
+            <div class="hud-label">VIDAS</div>
+            <div class="hud-value" id="lives">♥ ♥ ♥</div>
+        </div>
+
+        <div class="hud-card">
+            <div class="hud-label">COMBO</div>
+            <div class="hud-value" id="combo">x1</div>
+        </div>
+
+    </div>
+
+    <div class="health">
+        <div id="healthBar"></div>
+    </div>
+
+    <div id="mission">
+        MISSÃO: SOBREVIVA E DESTRUA OS OBSTÁCULOS
+    </div>
+
+    <div id="crosshair"></div>
+
+    <div id="announcement">
+        <h2 id="announcementTitle">AVIONECX</h2>
+        <p id="announcementText">Missão iniciada.</p>
+    </div>
+
+    <div id="achievement">
+        <div class="ach-title">🏆 CONQUISTA DESBLOQUEADA</div>
+        <div class="ach-name" id="achName">Primeiro Voo</div>
+        <div class="ach-desc" id="achDesc">Você entrou no AVIONECX.</div>
+    </div>
+
+    <div id="bottom">
+        <div class="help">
+            WASD • SPACE • SHIFT • P
+        </div>
+        <button id="pause">Ⅱ PAUSAR</button>
+    </div>
+</div>
+
+<div id="mobile">
+    <div class="mbtn" id="mUp">▲</div>
+    <div class="mbtn" id="mDown">▼</div>
+    <div class="mbtn" id="mLeft">◀</div>
+    <div class="mbtn" id="mRight">▶</div>
+    <div class="mbtn" id="mBoost">⚡</div>
+    <div class="mbtn" id="mFire">🔥</div>
+</div>
+
+<div id="pauseScreen">
+    <div class="pause-box">
+        <h2>JOGO PAUSADO</h2>
+        <p>Pressione P para continuar</p>
+    </div>
+</div>
+
+<div id="gameOver">
+    <div class="gameover-box">
+        <h1>MISSÃO ENCERRADA</h1>
+        <p>O AVIONECX sofreu danos críticos.</p>
+        <div class="final-score" id="finalScore">0</div>
+        <button class="restart" id="restartButton">
+            ↻ NOVA MISSÃO
+        </button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+/* ============================================================
+   AVIONECX 3D
+   ============================================================ */
+
+const canvas = document.getElementById("game");
+const loading = document.getElementById("loading");
+const menu = document.getElementById("menu");
+const playButton = document.getElementById("playButton");
+const hud = document.getElementById("hud");
+
+const scoreEl = document.getElementById("score");
+const speedEl = document.getElementById("speed");
+const livesEl = document.getElementById("lives");
+const comboEl = document.getElementById("combo");
+const healthBar = document.getElementById("healthBar");
+
+const announcement = document.getElementById("announcement");
+const announcementTitle = document.getElementById("announcementTitle");
+const announcementText = document.getElementById("announcementText");
+
+const achievement = document.getElementById("achievement");
+const achName = document.getElementById("achName");
+const achDesc = document.getElementById("achDesc");
+
+const pauseButton = document.getElementById("pause");
+const pauseScreen = document.getElementById("pauseScreen");
+
+const gameOver = document.getElementById("gameOver");
+const finalScore = document.getElementById("finalScore");
+const restartButton = document.getElementById("restartButton");
+
+let scene;
+let camera;
+let renderer;
+let clock;
+
+let airplane;
+let airplaneBody;
+let airplaneLight;
+
+let started = false;
+let paused = false;
+let gameEnded = false;
+
+let score = 0;
+let highScore = Number(localStorage.getItem("avionecxHighScore") || 0);
+
+let health = 100;
+let lives = 3;
+let combo = 1;
+
+let distance = 0;
+let elapsed = 0;
+
+let fireCooldown = 0;
+let spawnTimer = 0;
+let particleTimer = 0;
+
+let baseSpeed = 45;
+
+let shake = 0;
+let flash = 0;
+
+const keys = {};
+const bullets = [];
+const obstacles = [];
+const particles = [];
+const rings = [];
+const stars = [];
+
+const achievements = {
+    firstFlight:false,
+    destroy1:false,
+    destroy10:false,
+    destroy25:false,
+    score1000:false,
+    score5000:false,
+    survive60:false,
+    turbo:false
+};
+
+let destroyedCount = 0;
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+window.addEventListener("keydown", e=>{
+    keys[e.code] = true;
+
+    if(e.code === "Space"){
+        e.preventDefault();
+    }
+
+    if(e.code === "KeyP"){
+        togglePause();
+    }
+
+    if(e.code === "Space" && started && !paused){
+        shoot();
+    }
+});
+
+window.addEventListener("keyup", e=>{
+    keys[e.code] = false;
+});
+
+playButton.onclick = startGame;
+restartButton.onclick = restartGame;
+pauseButton.onclick = togglePause;
+
+/* ============================================================
+   MOBILE INPUT
+   ============================================================ */
+
+function mobileHold(id,code){
+    const el = document.getElementById(id);
+
+    const down = e=>{
+        e.preventDefault();
+        keys[code] = true;
+    };
+
+    const up = e=>{
+        e.preventDefault();
+        keys[code] = false;
+    };
+
+    el.addEventListener("touchstart",down,{passive:false});
+    el.addEventListener("touchend",up,{passive:false});
+    el.addEventListener("touchcancel",up,{passive:false});
+}
+
+mobileHold("mUp","KeyW");
+mobileHold("mDown","KeyS");
+mobileHold("mLeft","KeyA");
+mobileHold("mRight","KeyD");
+mobileHold("mBoost","ShiftLeft");
+
+document.getElementById("mFire").addEventListener("touchstart",e=>{
+    e.preventDefault();
+    shoot();
+},{passive:false});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+
+function init(){
+
+    scene = new THREE.Scene();
+
+    scene.background = new THREE.Color(0x02030a);
+
+    scene.fog = new THREE.FogExp2(
+        0x02030a,
+        .008
+    );
+
+    clock = new THREE.Clock();
+
+    camera = new THREE.PerspectiveCamera(
+        70,
+        innerWidth / innerHeight,
+        .1,
+        2000
+    );
+
+    camera.position.set(
+        0,
+        6,
+        18
+    );
+
+    renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias:true,
+        powerPreference:"high-performance"
+    });
+
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
+
+    renderer.setPixelRatio(
+        Math.min(devicePixelRatio,2)
+    );
+
+    renderer.shadowMap.enabled = true;
+
+    renderer.shadowMap.type =
+        THREE.PCFSoftShadowMap;
+
+    createLights();
+    createWorld();
+    createStars();
+    createAirplane();
+    createRings();
+
+    window.addEventListener(
+        "resize",
+        resize
+    );
+
+    animate();
+
+    setTimeout(()=>{
+        loading.classList.add("hide");
+    },700);
+}
+
+/* ============================================================
+   LIGHTS
+   ============================================================ */
+
+function createLights(){
+
+    const hemi =
+        new THREE.HemisphereLight(
+            0x6ea8ff,
+            0x050509,
+            1.7
+        );
+
+    scene.add(hemi);
+
+    const sun =
+        new THREE.DirectionalLight(
+            0xffffff,
+            2
+        );
+
+    sun.position.set(
+        80,
+        120,
+        40
+    );
+
+    sun.castShadow = true;
+
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
+
+    scene.add(sun);
+
+    const blue =
+        new THREE.PointLight(
+            0x00eaff,
+            15,
+            120
+        );
+
+    blue.position.set(
+        0,
+        15,
+        -50
+    );
+
+    scene.add(blue);
+
+    const purple =
+        new THREE.PointLight(
+            0x7c3aed,
+            12,
+            100
+        );
+
+    purple.position.set(
+        40,
+        10,
+        -120
+    );
+
+    scene.add(purple);
+}
+
+/* ============================================================
+   WORLD
+   ============================================================ */
+
+function createWorld(){
+
+    const groundGeometry =
+        new THREE.PlaneGeometry(
+            1000,
+            1000
+        );
+
+    const groundMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0x050a16,
+            roughness:.9,
+            metalness:.15
+        });
+
+    const ground =
+        new THREE.Mesh(
+            groundGeometry,
+            groundMaterial
+        );
+
+    ground.rotation.x =
+        -Math.PI/2;
+
+    ground.position.y = -12;
+
+    ground.receiveShadow = true;
+
+    scene.add(ground);
+
+    const grid =
+        new THREE.GridHelper(
+            1000,
+            100,
+            0x123c61,
+            0x07101c
+        );
+
+    grid.position.y = -11.9;
+
+    scene.add(grid);
+
+    createCity();
+}
+
+/* ============================================================
+   CITY / LANDMARKS
+   ============================================================ */
+
+function createCity(){
+
+    for(let i=0;i<35;i++){
+
+        const h =
+            5 + Math.random()*25;
+
+        const w =
+            4 + Math.random()*8;
+
+        const d =
+            4 + Math.random()*8;
+
+        const building =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    w,
+                    h,
+                    d
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:
+                        new THREE.Color(
+                            .015,
+                            .025 + Math.random()*.02,
+                            .07 + Math.random()*.06
+                        ),
+                    metalness:.7,
+                    roughness:.25
+                })
+            );
+
+        building.position.set(
+            (Math.random()-.5)*300,
+            -12+h/2,
+            -40-Math.random()*300
+        );
+
+        building.castShadow = true;
+
+        scene.add(building);
+
+        const glow =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    w+.1,
+                    .12,
+                    d+.1
+                ),
+                new THREE.MeshBasicMaterial({
+                    color:
+                        Math.random()>.5
+                            ? 0x00eaff
+                            : 0x7c3aed
+                })
+            );
+
+        glow.position.copy(
+            building.position
+        );
+
+        glow.position.y =
+            -12+h;
+
+        scene.add(glow);
+    }
+
+    createLandmark(
+        -55,
+        -90,
+        0x00eaff,
+        "EC"
+    );
+
+    createLandmark(
+        60,
+        -150,
+        0x7c3aed,
+        "ECx"
+    );
+}
+
+function createLandmark(
+    x,
+    z,
+    color,
+    text
+){
+
+    const tower =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                8,
+                11,
+                55,
+                32
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x070c1d,
+                metalness:.8,
+                roughness:.2
+            })
+        );
+
+    tower.position.set(
+        x,
+        15,
+        z
+    );
+
+    tower.castShadow = true;
+
+    scene.add(tower);
+
+    const light =
+        new THREE.PointLight(
+            color,
+            20,
+            80
+        );
+
+    light.position.set(
+        x,
+        20,
+        z
+    );
+
+    scene.add(light);
+
+    const ring =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                11,
+                .35,
+                12,
+                64
+            ),
+            new THREE.MeshBasicMaterial({
+                color
+            })
+        );
+
+    ring.position.set(
+        x,
+        40,
+        z
+    );
+
+    ring.rotation.x =
+        Math.PI/2;
+
+    scene.add(ring);
+}
+
+/* ============================================================
+   STARS
+   ============================================================ */
+
+function createStars(){
+
+    const count = 4500;
+
+    const positions =
+        new Float32Array(
+            count*3
+        );
+
+    for(let i=0;i<count;i++){
+
+        positions[i*3] =
+            (Math.random()-.5)*1200;
+
+        positions[i*3+1] =
+            Math.random()*450-30;
+
+        positions[i*3+2] =
+            -Math.random()*1200;
+    }
+
+    const geometry =
+        new THREE.BufferGeometry();
+
+    geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(
+            positions,
+            3
+        )
+    );
+
+    const material =
+        new THREE.PointsMaterial({
+            color:0xffffff,
+            size:1.4,
+            sizeAttenuation:true
+        });
+
+    const starField =
+        new THREE.Points(
+            geometry,
+            material
+        );
+
+    scene.add(starField);
+
+    stars.push(starField);
+}
+
+/* ============================================================
+   AIRPLANE
+   ============================================================ */
+
+function createAirplane(){
+
+    airplane =
+        new THREE.Group();
+
+    /* BODY */
+
+    const body =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                .65,
+                4.2,
+                8,
+                18
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x0a1429,
+                metalness:.85,
+                roughness:.2,
+                emissive:0x001522,
+                emissiveIntensity:.4
+            })
+        );
+
+    body.rotation.x =
+        Math.PI/2;
+
+    body.castShadow = true;
+
+    airplaneBody = body;
+
+    airplane.add(body);
+
+    /* NOSE */
+
+    const nose =
+        new THREE.Mesh(
+            new THREE.ConeGeometry(
+                .65,
+                2.4,
+                24
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x00dfff,
+                metalness:.8,
+                roughness:.2,
+                emissive:0x003c50,
+                emissiveIntensity:.7
+            })
+        );
+
+    nose.rotation.x =
+        -Math.PI/2;
+
+    nose.position.z = -3;
+
+    nose.castShadow = true;
+
+    airplane.add(nose);
+
+    /* WINGS */
+
+    const wingMat =
+        new THREE.MeshStandardMaterial({
+            color:0x111b34,
+            metalness:.9,
+            roughness:.18
+        });
+
+    const wing =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                8,
+                .18,
+                1.7
+            ),
+            wingMat
+        );
+
+    wing.position.z = .2;
+
+    wing.castShadow = true;
+
+    airplane.add(wing);
+
+    /* TAIL WING */
+
+    const tailWing =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                3.2,
+                .15,
+                1.1
+            ),
+            wingMat
+        );
+
+    tailWing.position.set(
+        0,
+        .3,
+        2
+    );
+
+    airplane.add(tailWing);
+
+    /* VERTICAL TAIL */
+
+    const tail =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .15,
+                1.7,
+                1.4
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x7c3aed,
+                emissive:0x26005a,
+                emissiveIntensity:.5,
+                metalness:.7
+            })
+        );
+
+    tail.position.set(
+        0,
+        .8,
+        1.8
+    );
+
+    airplane.add(tail);
+
+    /* ENGINE GLOW */
+
+    const engine =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .42,
+                .18,
+                1.5,
+                20
+            ),
+            new THREE.MeshBasicMaterial({
+                color:0x00eaff
+            })
+        );
+
+    engine.rotation.x =
+        Math.PI/2;
+
+    engine.position.z = 2.5;
+
+    airplane.add(engine);
+
+    /* ENGINE LIGHT */
+
+    airplaneLight =
+        new THREE.PointLight(
+            0x00eaff,
+            5,
+            18
+        );
+
+    airplaneLight.position.z = 3;
+
+    airplane.add(
+        airplaneLight
+    );
+
+    airplane.position.set(
+        0,
+        4,
+        10
+    );
+
+    scene.add(airplane);
+}
+
+/* ============================================================
+   FLIGHT RINGS
+   ============================================================ */
+
+function createRings(){
+
+    for(let i=0;i<10;i++){
+
+        const ring =
+            new THREE.Mesh(
+                new THREE.TorusGeometry(
+                    5,
+                    .12,
+                    12,
+                    48
+                ),
+                new THREE.MeshBasicMaterial({
+                    color:
+                        i%2
+                            ? 0x7c3aed
+                            : 0x00eaff
+                })
+            );
+
+        ring.position.set(
+            (Math.random()-.5)*50,
+            (Math.random()-.5)*20,
+            -50-i*45
+        );
+
+        ring.rotation.y =
+            Math.random();
+
+        scene.add(ring);
+
+        rings.push(ring);
+    }
+}
+
+/* ============================================================
+   START
+   ============================================================ */
+
+function startGame(){
+
+    if(started) return;
+
+    started = true;
+
+    paused = false;
+
+    gameEnded = false;
+
+    menu.classList.add("hide");
+
+    hud.classList.add("active");
+
+    resetGame();
+
+    showAnnouncement(
+        "AVIONECX ONLINE",
+        "A aeronave ECx está pronta. Boa missão."
+    );
+
+    unlockAchievement(
+        "firstFlight",
+        "Primeiro Voo",
+        "Você realizou seu primeiro voo no AVIONECX."
+    );
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+
+function resetGame(){
+
+    score = 0;
+    health = 100;
+    lives = 3;
+    combo = 1;
+    distance = 0;
+    elapsed = 0;
+    destroyedCount = 0;
+    baseSpeed = 45;
+
+    bullets.forEach(
+        b=>scene.remove(b.mesh)
+    );
+
+    obstacles.forEach(
+        o=>scene.remove(o.mesh)
+    );
+
+    particles.forEach(
+        p=>scene.remove(p.mesh)
+    );
+
+    bullets.length = 0;
+    obstacles.length = 0;
+    particles.length = 0;
+
+    airplane.position.set(
+        0,
+        4,
+        10
+    );
+
+    airplane.rotation.set(
+        0,
+        0,
+        0
+    );
+
+    updateHUD();
+}
+
+/* ============================================================
+   MOVEMENT
+   ============================================================ */
+
+function updatePlane(delta){
+
+    let x = 0;
+    let y = 0;
+
+    if(keys["KeyA"] || keys["ArrowLeft"])
+        x -= 1;
+
+    if(keys["KeyD"] || keys["ArrowRight"])
+        x += 1;
+
+    if(keys["KeyW"] || keys["ArrowUp"])
+        y += 1;
+
+    if(keys["KeyS"] || keys["ArrowDown"])
+        y -= 1;
+
+    const turbo =
+        keys["ShiftLeft"] ||
+        keys["ShiftRight"];
+
+    const moveSpeed =
+        turbo ? 30 : 20;
+
+    airplane.position.x +=
+        x * moveSpeed * delta;
+
+    airplane.position.y +=
+        y * moveSpeed * delta;
+
+    airplane.position.x =
+        THREE.MathUtils.clamp(
+            airplane.position.x,
+            -28,
+            28
+        );
+
+    airplane.position.y =
+        THREE.MathUtils.clamp(
+            airplane.position.y,
+            -3,
+            18
+        );
+
+    airplane.rotation.z =
+        THREE.MathUtils.lerp(
+            airplane.rotation.z,
+            -x*.45,
+            .12
+        );
+
+    airplane.rotation.x =
+        THREE.MathUtils.lerp(
+            airplane.rotation.x,
+            y*.22,
+            .12
+        );
+
+    airplaneLight.intensity =
+        turbo ? 10 : 5;
+
+    if(turbo){
+        unlockAchievement(
+            "turbo",
+            "Piloto de Alta Velocidade",
+            "Você ativou o turbo do AVIONECX."
+        );
+    }
+}
+
+/* ============================================================
+   SPAWN OBSTACLES
+   ============================================================ */
+
+function spawnObstacle(){
+
+    const type =
+        Math.random();
+
+    let mesh;
+    let hp = 1;
+    let radius = 2;
+
+    if(type < .35){
+
+        mesh =
+            new THREE.Mesh(
+                new THREE.IcosahedronGeometry(
+                    2.2,
+                    1
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:0x8a1028,
+                    emissive:0x3d0010,
+                    emissiveIntensity:1,
+                    metalness:.5,
+                    roughness:.3
+                })
+            );
+
+        radius = 2.5;
+        hp = 1;
+
+    }else if(type < .7){
+
+        mesh =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    4,
+                    4,
+                    4
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:0x5c2aa8,
+                    emissive:0x19004c,
+                    emissiveIntensity:.8,
+                    metalness:.8,
+                    roughness:.2
+                })
+            );
+
+        radius = 3;
+        hp = 2;
+
+    }else{
+
+        mesh =
+            new THREE.Mesh(
+                new THREE.TorusGeometry(
+                    3,
+                    .7,
+                    12,
+                    24
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:0xff8a00,
+                    emissive:0x5a2100,
+                    emissiveIntensity:1,
+                    metalness:.7,
+                    roughness:.2
+                })
+            );
+
+        radius = 3;
+        hp = 3;
+    }
+
+    mesh.position.set(
+        (Math.random()-.5)*55,
+        -3 + Math.random()*22,
+        -240
+    );
+
+    mesh.rotation.set(
+        Math.random()*3,
+        Math.random()*3,
+        Math.random()*3
+    );
+
+    mesh.castShadow = true;
+
+    scene.add(mesh);
+
+    obstacles.push({
+        mesh,
+        hp,
+        radius,
+        speed:
+            baseSpeed *
+            (.85 + Math.random()*.35),
+        spin:
+            (Math.random()-.5)*2
+    });
+}
+
+/* ============================================================
+   UPDATE OBSTACLES
+   ============================================================ */
+
+function updateObstacles(delta){
+
+    spawnTimer -= delta;
+
+    const spawnRate =
+        Math.max(
+            .28,
+            .9 - elapsed*.008
+        );
+
+    if(spawnTimer <= 0){
+
+        spawnObstacle();
+
+        spawnTimer = spawnRate;
+    }
+
+    for(let i=obstacles.length-1;i>=0;i--){
+
+        const o = obstacles[i];
+
+        o.mesh.position.z +=
+            o.speed * delta;
+
+        o.mesh.rotation.x +=
+            o.spin * delta;
+
+        o.mesh.rotation.y +=
+            o.spin * .7 * delta;
+
+        if(
+            o.mesh.position.distanceTo(
+                airplane.position
+            ) < o.radius + 1.8
+        ){
+
+            impact(o);
+
+            scene.remove(o.mesh);
+
+            obstacles.splice(i,1);
+
+            continue;
+        }
+
+        if(o.mesh.position.z > 30){
+
+            scene.remove(o.mesh);
+
+            obstacles.splice(i,1);
+
+            score += 5;
+
+            combo = 1;
+        }
+    }
+}
+
+/* ============================================================
+   SHOOT
+   ============================================================ */
+
+function shoot(){
+
+    if(!started || paused || gameEnded)
+        return;
+
+    if(fireCooldown > 0)
+        return;
+
+    fireCooldown = .16;
+
+    const geometry =
+        new THREE.SphereGeometry(
+            .16,
+            10,
+            10
+        );
+
+    const material =
+        new THREE.MeshBasicMaterial({
+            color:0x00eaff
+        });
+
+    const mesh =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    mesh.position.copy(
+        airplane.position
+    );
+
+    mesh.position.z -= 4;
+
+    const glow =
+        new THREE.PointLight(
+            0x00eaff,
+            4,
+            8
+        );
+
+    mesh.add(glow);
+
+    scene.add(mesh);
+
+    bullets.push({
+        mesh,
+        speed:150
+    });
+}
+
+/* ============================================================
+   UPDATE BULLETS
+   ============================================================ */
+
+function updateBullets(delta){
+
+    fireCooldown =
+        Math.max(
+            0,
+            fireCooldown-delta
+        );
+
+    for(let i=bullets.length-1;i>=0;i--){
+
+        const b = bullets[i];
+
+        b.mesh.position.z -=
+            b.speed*delta;
+
+        let removed = false;
+
+        for(let j=obstacles.length-1;j>=0;j--){
+
+            const o = obstacles[j];
+
+            const d =
+                b.mesh.position.distanceTo(
+                    o.mesh.position
+                );
+
+            if(d < o.radius + .4){
+
+                o.hp--;
+
+                createExplosion(
+                    o.mesh.position,
+                    0x00eaff,
+                    8
+                );
+
+                scene.remove(
+                    b.mesh
+                );
+
+                bullets.splice(i,1);
+
+                removed = true;
+
+                if(o.hp <= 0){
+
+                    destroyObstacle(
+                        j
+                    );
+                }
+
+                break;
+            }
+        }
+
+        if(removed)
+            continue;
+
+        if(
+            b.mesh.position.z < -500
+        ){
+
+            scene.remove(
+                b.mesh
+            );
+
+            bullets.splice(i,1);
+        }
+    }
+}
+
+/* ============================================================
+   DESTROY
+   ============================================================ */
+
+function destroyObstacle(index){
+
+    const o =
+        obstacles[index];
+
+    createExplosion(
+        o.mesh.position,
+        0xff4d78,
+        22
+    );
+
+    scene.remove(
+        o.mesh
+    );
+
+    obstacles.splice(
+        index,
+        1
+    );
+
+    destroyedCount++;
+
+    combo =
+        Math.min(
+            20,
+            combo+1
+        );
+
+    score +=
+        100 * combo;
+
+    if(destroyedCount >= 1){
+        unlockAchievement(
+            "destroy1",
+            "Primeiro Impacto",
+            "Você destruiu seu primeiro obstáculo."
+        );
+    }
+
+    if(destroyedCount >= 10){
+        unlockAchievement(
+            "destroy10",
+            "Caçador de Obstáculos",
+            "Você destruiu 10 obstáculos."
+        );
+    }
+
+    if(destroyedCount >= 25){
+        unlockAchievement(
+            "destroy25",
+            "Lenda do AVIONECX",
+            "Você destruiu 25 obstáculos."
+        );
+    }
+}
+
+/* ============================================================
+   IMPACT
+   ============================================================ */
+
+function impact(obstacle){
+
+    health -= 35;
+
+    combo = 1;
+
+    shake = .8;
+
+    flash = .4;
+
+    createExplosion(
+        airplane.position,
+        0xff315a,
+        30
+    );
+
+    showAnnouncement(
+        "⚠ IMPACTO",
+        "O AVIONECX sofreu danos!"
+    );
+
+    if(health <= 0){
+
+        lives--;
+
+        if(lives > 0){
+
+            health = 100;
+
+            airplane.position.x = 0;
+            airplane.position.y = 4;
+
+            showAnnouncement(
+                "SISTEMA RECUPERADO",
+                "Uma vida foi perdida."
+            );
+
+        }else{
+
+            endGame();
+        }
+    }
+
+    updateHUD();
+}
+
+/* ============================================================
+   EXPLOSIONS
+   ============================================================ */
+
+function createExplosion(
+    position,
+    color,
+    amount
+){
+
+    for(let i=0;i<amount;i++){
+
+        const mesh =
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .08 + Math.random()*.16,
+                    6,
+                    6
+                ),
+                new THREE.MeshBasicMaterial({
+                    color
+                })
+            );
+
+        mesh.position.copy(
+            position
+        );
+
+        scene.add(mesh);
+
+        const velocity =
+            new THREE.Vector3(
+                (Math.random()-.5)*20,
+                (Math.random()-.5)*20,
+                (Math.random()-.5)*20
+            );
+
+        particles.push({
+            mesh,
+            velocity,
+            life:.4 + Math.random()*.8
+        });
+    }
+}
+
+/* ============================================================
+   PARTICLES
+   ============================================================ */
+
+function updateParticles(delta){
+
+    for(let i=particles.length-1;i>=0;i--){
+
+        const p =
+            particles[i];
+
+        p.life -= delta;
+
+        p.mesh.position.addScaledVector(
+            p.velocity,
+            delta
+        );
+
+        p.velocity.multiplyScalar(
+            .97
+        );
+
+        p.mesh.scale.multiplyScalar(
+            .96
+        );
+
+        if(p.life <= 0){
+
+            scene.remove(
+                p.mesh
+            );
+
+            particles.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+/* ============================================================
+   RINGS
+   ============================================================ */
+
+function updateRings(delta){
+
+    rings.forEach(
+        ring=>{
+
+            ring.position.z +=
+                baseSpeed*delta;
+
+            ring.rotation.z +=
+                delta;
+
+            if(
+                ring.position.z > 40
+            ){
+
+                ring.position.z =
+                    -500;
+
+                ring.position.x =
+                    (Math.random()-.5)*55;
+
+                ring.position.y =
+                    -3 + Math.random()*22;
+            }
+
+            if(
+                ring.position.distanceTo(
+                    airplane.position
+                ) < 5.5
+            ){
+
+                score += 25;
+
+                ring.position.z =
+                    -500;
+
+                showAnnouncement(
+                    "CHECKPOINT",
+                    "+25 pontos"
+                );
+            }
+        }
+    );
+}
+
+/* ============================================================
+   CAMERA
+   ============================================================ */
+
+function updateCamera(delta){
+
+    const target =
+        airplane.position.clone();
+
+    target.z += 16;
+    target.y += 5;
+
+    camera.position.lerp(
+        target,
+        .08
+    );
+
+    const look =
+        airplane.position.clone();
+
+    look.z -= 25;
+
+    camera.lookAt(
+        look
+    );
+
+    if(shake > 0){
+
+        camera.position.x +=
+            (Math.random()-.5)*
+            shake;
+
+        camera.position.y +=
+            (Math.random()-.5)*
+            shake;
+
+        shake =
+            Math.max(
+                0,
+                shake-delta*2
+            );
+    }
+}
+
+/* ============================================================
+   GAME UPDATE
+   ============================================================ */
+
+function updateGame(delta){
+
+    if(!started || paused || gameEnded)
+        return;
+
+    elapsed += delta;
+
+    distance +=
+        baseSpeed*delta;
+
+    baseSpeed =
+        Math.min(
+            105,
+            45 + elapsed*.45
+        );
+
+    score +=
+        Math.floor(
+            baseSpeed*
+            delta*
+            .25
+        );
+
+    updatePlane(delta);
+    updateBullets(delta);
+    updateObstacles(delta);
+    updateParticles(delta);
+    updateRings(delta);
+    updateCamera(delta);
+
+    if(elapsed >= 60){
+        unlockAchievement(
+            "survive60",
+            "Sobrevivente",
+            "Você sobreviveu por 60 segundos."
+        );
+    }
+
+    if(score >= 1000){
+        unlockAchievement(
+            "score1000",
+            "Piloto Promissor",
+            "Você alcançou 1.000 pontos."
+        );
+    }
+
+    if(score >= 5000){
+        unlockAchievement(
+            "score5000",
+            "Mestre do Céu",
+            "Você alcançou 5.000 pontos."
+        );
+    }
+
+    updateHUD();
+}
+
+/* ============================================================
+   HUD
+   ============================================================ */
+
+function updateHUD(){
+
+    scoreEl.textContent =
+        Math.floor(score);
+
+    speedEl.textContent =
+        Math.floor(baseSpeed*3.2) +
+        " KM/H";
+
+    livesEl.textContent =
+        "♥ ".repeat(
+            Math.max(0,lives)
+        );
+
+    comboEl.textContent =
+        "x"+combo;
+
+    healthBar.style.width =
+        Math.max(
+            0,
+            health
+        )+"%";
+}
+
+/* ============================================================
+   ACHIEVEMENTS
+   ============================================================ */
+
+function unlockAchievement(
+    key,
+    name,
+    description
+){
+
+    if(achievements[key])
+        return;
+
+    achievements[key] = true;
+
+    achName.textContent =
+        name;
+
+    achDesc.textContent =
+        description;
+
+    achievement.classList.add(
+        "show"
+    );
+
+    setTimeout(()=>{
+        achievement.classList.remove(
+            "show"
+        );
+    },4000);
+}
+
+/* ============================================================
+   ANNOUNCEMENT
+   ============================================================ */
+
+let announcementTimer;
+
+function showAnnouncement(
+    title,
+    text
+){
+
+    announcementTitle.textContent =
+        title;
+
+    announcementText.textContent =
+        text;
+
+    announcement.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        announcementTimer
+    );
+
+    announcementTimer =
+        setTimeout(()=>{
+            announcement.classList.remove(
+                "show"
+            );
+        },2200);
+}
+
+/* ============================================================
+   PAUSE
+   ============================================================ */
+
+function togglePause(){
+
+    if(!started || gameEnded)
+        return;
+
+    paused = !paused;
+
+    pauseScreen.style.display =
+        paused ? "flex" : "none";
+
+    pauseButton.textContent =
+        paused
+            ? "▶ CONTINUAR"
+            : "Ⅱ PAUSAR";
+
+    if(paused)
+        clock.getDelta();
+}
+
+/* ============================================================
+   GAME OVER
+   ============================================================ */
+
+function endGame(){
+
+    gameEnded = true;
+
+    if(score > highScore){
+
+        highScore = Math.floor(score);
+
+        localStorage.setItem(
+            "avionecxHighScore",
+            highScore
+        );
+    }
+
+    finalScore.innerHTML =
+        Math.floor(score) +
+        "<div style='font-size:12px;color:#71809a;margin-top:8px'>RECORDE: "+
+        highScore+
+        "</div>";
+
+    gameOver.style.display =
+        "flex";
+}
+
+/* ============================================================
+   RESTART
+   ============================================================ */
+
+function restartGame(){
+
+    gameOver.style.display =
+        "none";
+
+    paused = false;
+
+    gameEnded = false;
+
+    resetGame();
+
+    showAnnouncement(
+        "NOVA MISSÃO",
+        "AVIONECX reiniciado."
+    );
+}
+
+/* ============================================================
+   RESIZE
+   ============================================================ */
+
+function resize(){
+
+    camera.aspect =
+        innerWidth /
+        innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
+}
+
+/* ============================================================
+   LOOP
+   ============================================================ */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    const delta =
+        Math.min(
+            clock.getDelta(),
+            .05
+        );
+
+    if(!paused && started){
+
+        updateGame(delta);
+
+        stars.forEach(
+            star=>{
+                star.rotation.y +=
+                    delta*.002;
+            }
+        );
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+
+try{
+
+    init();
+
+}catch(error){
+
+    console.error(
+        "Erro AVIONECX:",
+        error
+    );
+
+    loading.innerHTML =
+        "<div style='color:#ff4d78;font-size:20px;font-weight:bold'>"+
+        "ERRO AO CARREGAR AVIONECX"+
+        "</div>"+
+        "<div style='color:#8993ab;margin-top:10px'>"+
+        error.message+
+        "</div>";
+}
+</script>
+
+</body>
+</html>
