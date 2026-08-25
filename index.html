@@ -2,29 +2,56 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>AVIONECX — EC</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<title>AVIONECX 2.0 — EC</title>
 
 <style>
+:root{
+    --cyan:#00eaff;
+    --cyan2:#00bcd4;
+    --purple:#7c3aed;
+    --pink:#ff35c7;
+    --red:#ff416c;
+    --yellow:#ffd166;
+    --green:#00ffb3;
+    --bg:#02030a;
+    --panel:rgba(4,8,25,.82);
+    --border:rgba(255,255,255,.11);
+    --muted:#7f8aa2;
+    --text:#f5f7ff;
+}
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
     user-select:none;
     -webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#02030a;
+    background:var(--bg);
     color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 body{
     touch-action:none;
+}
+
+button{
+    font:inherit;
 }
 
 #game{
@@ -35,139 +62,555 @@ body{
     display:block;
 }
 
+/* =========================================================
+   LOADING
+========================================================= */
+
 #loading{
     position:fixed;
     inset:0;
-    z-index:9999;
+    z-index:99999;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
+
     background:
-        radial-gradient(circle at center,rgba(0,234,255,.15),transparent 35%),
+        radial-gradient(
+            circle at center,
+            rgba(0,234,255,.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 70% 20%,
+            rgba(124,58,237,.12),
+            transparent 25%
+        ),
         #02030a;
-    transition:.6s;
+
+    transition:
+        opacity .6s ease,
+        visibility .6s ease;
 }
 
 #loading.hide{
     opacity:0;
+    visibility:hidden;
     pointer-events:none;
 }
 
 .loading-logo{
-    font-size:70px;
+    font-size:clamp(55px,10vw,100px);
     font-weight:1000;
     letter-spacing:12px;
-    background:linear-gradient(90deg,#00eaff,#7c3aed,#ff35c7);
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan),
+            var(--purple),
+            var(--pink)
+        );
+
     -webkit-background-clip:text;
+    background-clip:text;
     color:transparent;
+
+    filter:
+        drop-shadow(0 0 30px rgba(0,234,255,.3));
+
+    animation:
+        loadingPulse 1.8s infinite ease-in-out;
 }
 
 .loading-text{
-    margin-top:18px;
+    margin-top:20px;
     color:#8793ad;
     letter-spacing:4px;
-    font-size:12px;
+    font-size:11px;
 }
+
+.loading-bar{
+    margin-top:22px;
+    width:min(300px,70vw);
+    height:3px;
+    overflow:hidden;
+    border-radius:99px;
+    background:rgba(255,255,255,.08);
+}
+
+.loading-progress{
+    height:100%;
+    width:0%;
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan),
+            var(--purple),
+            var(--pink)
+        );
+    box-shadow:0 0 20px var(--cyan);
+    animation:loadingProgress 1.5s ease forwards;
+}
+
+@keyframes loadingPulse{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.04);
+    }
+}
+
+@keyframes loadingProgress{
+    to{
+        width:100%;
+    }
+}
+
+/* =========================================================
+   COMMON UI
+========================================================= */
+
+.hidden{
+    display:none!important;
+}
+
+.glass{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.015)
+        ),
+        var(--panel);
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.35),
+        inset 0 0 40px rgba(255,255,255,.015);
+}
+
+.icon-btn{
+    border:1px solid var(--border);
+    background:rgba(3,7,20,.72);
+    color:#fff;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.icon-btn:hover{
+    border-color:rgba(0,234,255,.4);
+    color:var(--cyan);
+    transform:translateY(-1px);
+}
+
+.primary-btn{
+    border:0;
+    cursor:pointer;
+    color:#02030a;
+    font-weight:1000;
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--cyan),
+            var(--purple),
+            var(--pink)
+        );
+
+    box-shadow:
+        0 0 35px rgba(0,234,255,.25);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.primary-btn:hover{
+    transform:translateY(-3px) scale(1.02);
+
+    box-shadow:
+        0 0 55px rgba(0,234,255,.45);
+}
+
+.secondary-btn{
+    border:1px solid var(--border);
+    cursor:pointer;
+    color:#fff;
+    background:rgba(255,255,255,.04);
+    border-radius:13px;
+    transition:.2s;
+}
+
+.secondary-btn:hover{
+    border-color:rgba(0,234,255,.35);
+    background:rgba(0,234,255,.06);
+}
+
+/* =========================================================
+   MAIN MENU
+========================================================= */
 
 #menu{
     position:fixed;
     inset:0;
     z-index:5000;
+
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
+
     padding:20px;
+
     background:
-        radial-gradient(circle at 50% 35%,rgba(0,234,255,.12),transparent 35%),
-        linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.82));
-    transition:.6s;
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(0,234,255,.12),
+            transparent 32%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,.05),
+            rgba(0,0,0,.84)
+        );
+
+    transition:.5s;
 }
 
 #menu.hide{
     opacity:0;
     pointer-events:none;
+    transform:scale(1.03);
 }
 
 .menu-box{
-    width:min(650px,94vw);
-    padding:45px 30px;
-    text-align:center;
+    width:min(900px,96vw);
+    max-height:94vh;
+    overflow:auto;
+
+    padding:42px;
+
     border-radius:30px;
+
+    text-align:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(7,13,36,.9),
+            rgba(3,7,20,.82)
+        );
+
     border:1px solid rgba(255,255,255,.12);
-    background:rgba(4,8,25,.78);
-    backdrop-filter:blur(25px);
+
+    backdrop-filter:blur(30px);
+
     box-shadow:
-        0 0 100px rgba(0,234,255,.12),
-        inset 0 0 50px rgba(255,255,255,.02);
+        0 0 120px rgba(0,234,255,.09),
+        inset 0 0 70px rgba(255,255,255,.018);
 }
 
 .ec-small{
-    color:#00eaff;
-    font-size:11px;
+    color:var(--cyan);
+    font-size:10px;
     letter-spacing:5px;
     font-weight:bold;
-    margin-bottom:15px;
+    margin-bottom:14px;
 }
 
 .title{
-    font-size:clamp(50px,12vw,100px);
-    line-height:.9;
+    font-size:clamp(48px,10vw,105px);
+    line-height:.85;
     font-weight:1000;
     letter-spacing:5px;
-    background:linear-gradient(90deg,#fff,#00eaff,#7c3aed,#ff35c7);
+
+    background:
+        linear-gradient(
+            90deg,
+            #fff,
+            var(--cyan),
+            var(--purple),
+            var(--pink)
+        );
+
     -webkit-background-clip:text;
+    background-clip:text;
     color:transparent;
-    text-shadow:0 0 40px rgba(0,234,255,.25);
+
+    filter:
+        drop-shadow(0 0 35px rgba(0,234,255,.2));
 }
 
 .subtitle{
-    margin-top:15px;
-    font-size:20px;
+    margin-top:16px;
     color:#c6cede;
-    letter-spacing:4px;
+    font-size:18px;
+    letter-spacing:5px;
 }
 
 .description{
     color:#7f8aa2;
     line-height:1.7;
-    margin:25px auto;
-    max-width:520px;
+    margin:23px auto;
+    max-width:620px;
 }
 
-.play{
-    border:0;
-    padding:17px 40px;
+.menu-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:12px;
+
+    margin:25px 0;
+}
+
+.menu-option{
+    position:relative;
+    padding:18px 15px;
+
     border-radius:16px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:
+        rgba(255,255,255,.025);
+
     cursor:pointer;
-    font-weight:1000;
-    font-size:15px;
-    letter-spacing:2px;
-    color:#02030a;
-    background:linear-gradient(90deg,#00eaff,#7c3aed,#ff35c7);
-    box-shadow:0 0 35px rgba(0,234,255,.3);
+
+    text-align:left;
+
     transition:.2s;
 }
 
-.play:hover{
-    transform:translateY(-3px) scale(1.03);
-    box-shadow:0 0 55px rgba(0,234,255,.5);
+.menu-option:hover{
+    border-color:
+        rgba(0,234,255,.35);
+
+    background:
+        rgba(0,234,255,.045);
+
+    transform:translateY(-2px);
 }
 
-.menu-info{
-    margin-top:25px;
-    color:#68748d;
-    font-size:12px;
-    line-height:1.8;
+.menu-option.active{
+    border-color:
+        rgba(0,234,255,.7);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,234,255,.09),
+            rgba(124,58,237,.08)
+        );
+
+    box-shadow:
+        0 0 25px rgba(0,234,255,.08);
 }
+
+.option-label{
+    color:#65738c;
+    font-size:9px;
+    letter-spacing:2px;
+    margin-bottom:6px;
+}
+
+.option-value{
+    font-weight:900;
+    font-size:16px;
+}
+
+.option-desc{
+    color:#69758d;
+    font-size:10px;
+    line-height:1.5;
+    margin-top:5px;
+}
+
+.menu-actions{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.play{
+    padding:16px 38px;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+.menu-secondary{
+    padding:15px 22px;
+}
+
+.menu-footer{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:18px;
+    margin-top:24px;
+    color:#65718a;
+    font-size:10px;
+}
+
+.menu-footer span{
+    color:#9aa6bb;
+}
+
+/* =========================================================
+   PROFILE / STATS
+========================================================= */
+
+#profilePanel{
+    position:fixed;
+    inset:0;
+    z-index:7000;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:blur(15px);
+}
+
+.profile-box{
+    width:min(760px,94vw);
+    max-height:90vh;
+    overflow:auto;
+
+    padding:28px;
+    border-radius:25px;
+}
+
+.profile-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.profile-title{
+    font-size:28px;
+    font-weight:1000;
+}
+
+.profile-title span{
+    color:var(--cyan);
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:10px;
+
+    margin:20px 0;
+}
+
+.stat{
+    padding:17px;
+    border-radius:15px;
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.07);
+}
+
+.stat-label{
+    color:#69758c;
+    font-size:9px;
+    letter-spacing:2px;
+}
+
+.stat-value{
+    margin-top:7px;
+    font-size:22px;
+    font-weight:1000;
+}
+
+.stat:nth-child(1) .stat-value{
+    color:var(--cyan);
+}
+
+.stat:nth-child(2) .stat-value{
+    color:var(--purple);
+}
+
+.stat:nth-child(3) .stat-value{
+    color:var(--yellow);
+}
+
+.stat:nth-child(4) .stat-value{
+    color:var(--pink);
+}
+
+.achievement-list{
+    display:grid;
+    grid-template-columns:
+        repeat(2,1fr);
+    gap:9px;
+}
+
+.achievement-item{
+    padding:14px;
+    border-radius:13px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    opacity:.45;
+}
+
+.achievement-item.unlocked{
+    opacity:1;
+
+    border-color:
+        rgba(255,209,102,.3);
+
+    background:
+        rgba(255,209,102,.045);
+}
+
+.achievement-item strong{
+    display:block;
+    color:#fff;
+    font-size:13px;
+}
+
+.achievement-item small{
+    display:block;
+    color:#748098;
+    font-size:10px;
+    margin-top:4px;
+}
+
+/* =========================================================
+   HUD
+========================================================= */
 
 #hud{
     position:fixed;
     inset:0;
     z-index:100;
+
     pointer-events:none;
+
     opacity:0;
-    transition:.4s;
+    transition:.35s;
 }
 
 #hud.active{
@@ -176,38 +619,45 @@ body{
 
 .top{
     position:absolute;
-    top:18px;
-    left:18px;
-    right:18px;
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
+    top:16px;
+    left:16px;
+    right:16px;
+
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(110px,1fr));
+
+    gap:9px;
 }
 
 .hud-card{
-    padding:11px 15px;
-    min-width:130px;
+    min-width:0;
+    padding:11px 14px;
+
     border-radius:14px;
-    background:rgba(3,7,20,.65);
-    border:1px solid rgba(255,255,255,.1);
+
+    background:
+        rgba(3,7,20,.62);
+
+    border:1px solid rgba(255,255,255,.09);
+
     backdrop-filter:blur(14px);
-    box-shadow:0 0 25px rgba(0,234,255,.06);
 }
 
 .hud-label{
     color:#68758e;
-    font-size:9px;
+    font-size:8px;
     letter-spacing:2px;
     margin-bottom:5px;
 }
 
 .hud-value{
-    font-weight:900;
-    font-size:16px;
+    font-weight:1000;
+    font-size:15px;
 }
 
 #score{
-    color:#00eaff;
+    color:var(--cyan);
 }
 
 #speed{
@@ -219,40 +669,67 @@ body{
 }
 
 #combo{
-    color:#ffd166;
+    color:var(--yellow);
 }
 
 .health{
     position:absolute;
-    top:78px;
+    top:72px;
     left:50%;
+
     transform:translateX(-50%);
-    width:min(360px,65vw);
+
+    width:min(400px,55vw);
     height:8px;
-    border-radius:10px;
+
+    border-radius:99px;
     overflow:hidden;
-    background:rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.07);
+
     border:1px solid rgba(255,255,255,.08);
 }
 
 #healthBar{
-    height:100%;
     width:100%;
-    background:linear-gradient(90deg,#ff315a,#ffd166,#00ffb3);
-    transition:.2s;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--red),
+            var(--yellow),
+            var(--green)
+        );
+
+    box-shadow:
+        0 0 14px rgba(0,255,179,.25);
+
+    transition:.18s;
 }
 
 #mission{
     position:absolute;
-    top:100px;
+    top:91px;
     left:50%;
+
     transform:translateX(-50%);
-    padding:8px 15px;
+
+    max-width:70vw;
+
+    padding:7px 13px;
+
     border-radius:20px;
-    background:rgba(0,0,0,.42);
-    border:1px solid rgba(255,255,255,.08);
+
+    background:
+        rgba(0,0,0,.4);
+
+    border:1px solid rgba(255,255,255,.07);
+
     color:#9ca8bd;
-    font-size:11px;
+
+    font-size:10px;
+
     white-space:nowrap;
 }
 
@@ -260,78 +737,127 @@ body{
     position:absolute;
     left:50%;
     top:50%;
+
     width:22px;
     height:22px;
+
     transform:translate(-50%,-50%);
-    border:1px solid rgba(0,234,255,.7);
+
+    border:1px solid rgba(0,234,255,.65);
     border-radius:50%;
-    box-shadow:0 0 15px rgba(0,234,255,.3);
+
+    box-shadow:
+        0 0 15px rgba(0,234,255,.25);
 }
 
 #crosshair:before,
 #crosshair:after{
     content:"";
     position:absolute;
-    background:rgba(255,255,255,.7);
+    background:rgba(255,255,255,.65);
 }
 
 #crosshair:before{
-    width:35px;
+    width:34px;
     height:1px;
-    left:-8px;
+    left:-7px;
     top:10px;
 }
 
 #crosshair:after{
-    height:35px;
     width:1px;
+    height:34px;
     left:10px;
-    top:-8px;
+    top:-7px;
 }
+
+/* =========================================================
+   ANNOUNCEMENT
+========================================================= */
 
 #announcement{
     position:absolute;
+
     left:50%;
     top:30%;
-    transform:translate(-50%,-50%) scale(.9);
+
+    transform:
+        translate(-50%,-50%)
+        scale(.9);
+
     opacity:0;
-    padding:20px 30px;
+
+    padding:18px 26px;
+
     min-width:260px;
+
     text-align:center;
-    border-radius:20px;
-    background:rgba(3,7,20,.9);
-    border:1px solid rgba(0,234,255,.25);
-    box-shadow:0 0 50px rgba(0,234,255,.12);
+
+    border-radius:18px;
+
+    background:
+        rgba(3,7,20,.91);
+
+    border:1px solid
+        rgba(0,234,255,.25);
+
+    box-shadow:
+        0 0 50px
+        rgba(0,234,255,.1);
+
     transition:.3s;
 }
 
 #announcement.show{
     opacity:1;
-    transform:translate(-50%,-50%) scale(1);
+
+    transform:
+        translate(-50%,-50%)
+        scale(1);
 }
 
 #announcement h2{
-    color:#00eaff;
-    margin-bottom:7px;
+    color:var(--cyan);
+    font-size:19px;
+    margin-bottom:6px;
 }
 
 #announcement p{
     color:#9ca8bd;
-    font-size:13px;
+    font-size:12px;
 }
+
+/* =========================================================
+   ACHIEVEMENT POPUP
+========================================================= */
 
 #achievement{
     position:absolute;
-    right:20px;
-    top:100px;
-    width:270px;
+
+    right:18px;
+    top:110px;
+
+    width:280px;
+
     padding:15px;
-    border-radius:18px;
-    background:rgba(8,12,30,.94);
-    border:1px solid rgba(255,209,102,.35);
-    box-shadow:0 0 35px rgba(255,209,102,.12);
-    transform:translateX(120%);
-    transition:.5s cubic-bezier(.2,.8,.2,1);
+
+    border-radius:17px;
+
+    background:
+        rgba(8,12,30,.95);
+
+    border:1px solid
+        rgba(255,209,102,.35);
+
+    box-shadow:
+        0 0 35px
+        rgba(255,209,102,.1);
+
+    transform:translateX(125%);
+
+    transition:
+        transform .5s
+        cubic-bezier(.2,.8,.2,1);
 }
 
 #achievement.show{
@@ -339,193 +865,458 @@ body{
 }
 
 .ach-title{
-    color:#ffd166;
-    font-size:10px;
+    color:var(--yellow);
+    font-size:9px;
     letter-spacing:2px;
     margin-bottom:7px;
 }
 
 .ach-name{
-    font-size:17px;
+    font-size:16px;
     font-weight:1000;
 }
 
 .ach-desc{
     color:#8894aa;
-    font-size:11px;
+    font-size:10px;
     margin-top:5px;
 }
 
+/* =========================================================
+   BOTTOM
+========================================================= */
+
 #bottom{
     position:absolute;
-    left:18px;
-    right:18px;
-    bottom:18px;
+    left:16px;
+    right:16px;
+    bottom:16px;
+
     display:flex;
     justify-content:space-between;
     align-items:flex-end;
 }
 
 .help{
-    padding:10px 14px;
-    border-radius:14px;
-    background:rgba(3,7,20,.6);
-    border:1px solid rgba(255,255,255,.08);
+    padding:9px 13px;
+    border-radius:13px;
+
+    background:
+        rgba(3,7,20,.58);
+
+    border:1px solid rgba(255,255,255,.07);
+
     color:#748098;
-    font-size:11px;
+    font-size:10px;
 }
 
 #pause{
-    border:0;
     pointer-events:auto;
+
+    border:1px solid rgba(255,255,255,.11);
+
     cursor:pointer;
-    padding:10px 16px;
-    border-radius:13px;
+
+    padding:10px 15px;
+
+    border-radius:12px;
+
     color:#fff;
-    background:rgba(3,7,20,.7);
-    border:1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(3,7,20,.7);
+
+    transition:.2s;
 }
+
+#pause:hover{
+    color:var(--cyan);
+    border-color:
+        rgba(0,234,255,.35);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 #mobile{
     position:fixed;
     inset:0;
     z-index:300;
+
     pointer-events:none;
     display:none;
 }
 
 .mbtn{
     position:absolute;
+
     width:58px;
     height:58px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     border-radius:50%;
+
     color:#fff;
+
     font-weight:1000;
-    background:rgba(3,7,20,.6);
+
+    background:
+        rgba(3,7,20,.62);
+
     border:1px solid rgba(255,255,255,.14);
+
     backdrop-filter:blur(10px);
+
     pointer-events:auto;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.2);
 }
 
-#mUp{left:80px;bottom:145px}
-#mDown{left:80px;bottom:20px}
-#mLeft{left:15px;bottom:82px}
-#mRight{left:145px;bottom:82px}
+.mbtn:active{
+    transform:scale(.92);
+    background:
+        rgba(0,234,255,.14);
+}
+
+#mUp{
+    left:80px;
+    bottom:145px;
+}
+
+#mDown{
+    left:80px;
+    bottom:20px;
+}
+
+#mLeft{
+    left:15px;
+    bottom:82px;
+}
+
+#mRight{
+    left:145px;
+    bottom:82px;
+}
 
 #mFire{
-    right:25px;
-    bottom:85px;
+    right:24px;
+    bottom:78px;
+
     width:80px;
     height:80px;
-    background:rgba(255,55,100,.16);
-    border-color:rgba(255,55,100,.4);
+
+    background:
+        rgba(255,55,100,.16);
+
+    border-color:
+        rgba(255,55,100,.4);
 }
 
 #mBoost{
     right:30px;
-    bottom:180px;
+    bottom:175px;
 }
 
-#gameOver{
-    position:fixed;
-    inset:0;
-    z-index:6000;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    background:rgba(0,0,0,.72);
-    backdrop-filter:blur(12px);
-}
-
-.gameover-box{
-    width:min(450px,92vw);
-    padding:35px;
-    text-align:center;
-    border-radius:28px;
-    background:rgba(5,9,25,.95);
-    border:1px solid rgba(255,255,255,.12);
-}
-
-.gameover-box h1{
-    color:#ff4d78;
-    font-size:40px;
-    margin-bottom:10px;
-}
-
-.final-score{
-    font-size:45px;
-    font-weight:1000;
-    color:#00eaff;
-    margin:15px 0;
-}
-
-.restart{
-    border:0;
-    padding:15px 30px;
-    border-radius:14px;
-    cursor:pointer;
-    font-weight:1000;
-    background:linear-gradient(90deg,#00eaff,#7c3aed);
-    color:#02030a;
-}
+/* =========================================================
+   PAUSE
+========================================================= */
 
 #pauseScreen{
     position:fixed;
     inset:0;
+
     z-index:5500;
+
     display:none;
+
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.5);
-    backdrop-filter:blur(8px);
+
+    background:
+        rgba(0,0,0,.55);
+
+    backdrop-filter:blur(10px);
 }
 
 .pause-box{
+    width:min(420px,90vw);
+
     text-align:center;
+
     padding:35px;
+
     border-radius:25px;
-    background:rgba(4,8,25,.9);
+
+    background:
+        rgba(4,8,25,.92);
+
     border:1px solid rgba(255,255,255,.1);
 }
 
 .pause-box h2{
-    color:#00eaff;
+    color:var(--cyan);
     margin-bottom:10px;
 }
 
+.pause-box p{
+    color:#77839a;
+}
+
+.pause-buttons{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:22px;
+}
+
+.pause-buttons button{
+    padding:12px 18px;
+}
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+#gameOver{
+    position:fixed;
+    inset:0;
+
+    z-index:6000;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(0,0,0,.74);
+
+    backdrop-filter:blur(14px);
+}
+
+.gameover-box{
+    width:min(500px,92vw);
+
+    padding:38px;
+
+    text-align:center;
+
+    border-radius:28px;
+
+    background:
+        rgba(5,9,25,.96);
+
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.gameover-box h1{
+    color:var(--red);
+    font-size:clamp(30px,8vw,45px);
+    margin-bottom:9px;
+}
+
+.gameover-box p{
+    color:#7e899e;
+}
+
+.final-score{
+    font-size:50px;
+    font-weight:1000;
+    color:var(--cyan);
+    margin:18px 0;
+}
+
+.final-meta{
+    display:grid;
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:8px;
+
+    margin-bottom:20px;
+}
+
+.final-stat{
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.035);
+}
+
+.final-stat span{
+    display:block;
+    color:#65718a;
+    font-size:9px;
+    letter-spacing:1px;
+}
+
+.final-stat strong{
+    display:block;
+    margin-top:5px;
+    font-size:15px;
+}
+
+.restart{
+    padding:15px 30px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
 @media(max-width:800px){
-    #mobile{
-        display:block;
+
+    .menu-box{
+        padding:28px 18px;
+        border-radius:23px;
+    }
+
+    .subtitle{
+        font-size:13px;
+        letter-spacing:3px;
+    }
+
+    .description{
+        font-size:12px;
+    }
+
+    .menu-grid{
+        grid-template-columns:1fr;
+    }
+
+    .menu-option{
+        padding:13px;
+    }
+
+    .stats-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .achievement-list{
+        grid-template-columns:1fr;
+    }
+
+    .top{
+        grid-template-columns:
+            repeat(4,1fr);
+
+        gap:5px;
+
+        left:7px;
+        right:7px;
+        top:7px;
+    }
+
+    .hud-card{
+        padding:8px 7px;
+    }
+
+    .hud-label{
+        font-size:7px;
+        letter-spacing:1px;
+    }
+
+    .hud-value{
+        font-size:11px;
+    }
+
+    .health{
+        top:58px;
+        width:60vw;
+    }
+
+    #mission{
+        top:76px;
+        max-width:82vw;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+
+    #achievement{
+        top:92px;
+        right:8px;
+        width:240px;
+    }
+
+    #bottom{
+        left:8px;
+        right:8px;
+        bottom:8px;
     }
 
     .help{
         display:none;
     }
 
-    #bottom{
-        bottom:15px;
+    #mobile{
+        display:block;
+    }
+}
+
+@media(max-width:480px){
+
+    .title{
+        font-size:48px;
     }
 
-    .hud-card{
-        min-width:auto;
-        padding:9px 10px;
+    .menu-actions{
+        flex-direction:column;
     }
 
-    .hud-label{
-        font-size:8px;
+    .play,
+    .menu-secondary{
+        width:100%;
     }
 
-    .hud-value{
-        font-size:13px;
+    .profile-box{
+        padding:20px 15px;
     }
 
-    #mission{
-        top:100px;
-        font-size:9px;
+    .profile-title{
+        font-size:22px;
+    }
+
+    .stats-grid{
+        gap:6px;
+    }
+
+    .stat{
+        padding:12px;
+    }
+
+    .stat-value{
+        font-size:18px;
+    }
+}
+
+@media(orientation:landscape) and (max-height:500px){
+
+    .menu-box{
+        padding:20px;
+        max-height:92vh;
+    }
+
+    .description{
+        margin:12px auto;
+    }
+
+    .menu-grid{
+        margin:12px 0;
+    }
+
+    .menu-footer{
+        display:none;
+    }
+
+    #mobile .mbtn{
+        transform:scale(.8);
     }
 }
 </style>
@@ -533,66 +1324,466 @@ body{
 
 <body>
 
+<!-- =======================================================
+     LOADING
+======================================================= -->
+
 <div id="loading">
+
     <div class="loading-logo">EC</div>
-    <div class="loading-text">CARREGANDO AVIONECX...</div>
+
+    <div class="loading-text">
+        INICIALIZANDO AVIONECX 2.0...
+    </div>
+
+    <div class="loading-bar">
+        <div class="loading-progress"></div>
+    </div>
+
 </div>
 
 <canvas id="game"></canvas>
 
+<!-- =======================================================
+     MENU
+======================================================= -->
+
 <div id="menu">
+
     <div class="menu-box">
-        <div class="ec-small">ESTÚDIO CENTRAL BRASILEIRO</div>
-        <div class="title">AVIONECX</div>
-        <div class="subtitle">MISSÃO AÉREA 3D</div>
+
+        <div class="ec-small">
+            ESTÚDIO CENTRAL BRASILEIRO
+        </div>
+
+        <div class="title">
+            AVIONECX
+        </div>
+
+        <div class="subtitle">
+            MISSÃO AÉREA 3D
+        </div>
 
         <p class="description">
-            Pilote a aeronave experimental da ECx,
-            desvie dos obstáculos, destrua ameaças,
-            aumente sua velocidade e desbloqueie conquistas.
+            A aeronave experimental da ECx voltou mais rápida,
+            mais precisa e com novos sistemas de combate.
+            Escolha sua missão e domine os céus.
         </p>
 
-        <button class="play" id="playButton">
-            ▶ INICIAR MISSÃO
-        </button>
+        <div class="menu-grid">
 
-        <div class="menu-info">
-            WASD / SETAS — Pilotar<br>
-            SPACE — Atirar<br>
-            SHIFT — Turbo<br>
-            P — Pausar
+            <div class="menu-option active"
+                 data-mode="mission">
+
+                <div class="option-label">
+                    MODO
+                </div>
+
+                <div class="option-value">
+                    MISSÃO
+                </div>
+
+                <div class="option-desc">
+                    Progrida, destrua ameaças
+                    e desbloqueie objetivos.
+                </div>
+
+            </div>
+
+            <div class="menu-option"
+                 data-mode="survival">
+
+                <div class="option-label">
+                    MODO
+                </div>
+
+                <div class="option-value">
+                    SOBREVIVÊNCIA
+                </div>
+
+                <div class="option-desc">
+                    Sobreviva o máximo possível
+                    contra ondas progressivas.
+                </div>
+
+            </div>
+
+            <div class="menu-option"
+                 data-mode="time">
+
+                <div class="option-label">
+                    MODO
+                </div>
+
+                <div class="option-value">
+                    CONTRA O TEMPO
+                </div>
+
+                <div class="option-desc">
+                    Faça a maior pontuação
+                    antes do cronômetro zerar.
+                </div>
+
+            </div>
+
+            <div class="menu-option active"
+                 data-difficulty="normal">
+
+                <div class="option-label">
+                    DIFICULDADE
+                </div>
+
+                <div class="option-value">
+                    NORMAL
+                </div>
+
+                <div class="option-desc">
+                    Equilíbrio entre velocidade
+                    e dificuldade.
+                </div>
+
+            </div>
+
+            <div class="menu-option"
+                 data-difficulty="hard">
+
+                <div class="option-label">
+                    DIFICULDADE
+                </div>
+
+                <div class="option-value">
+                    EXTREMO
+                </div>
+
+                <div class="option-desc">
+                    Inimigos rápidos,
+                    menos tolerância a erros.
+                </div>
+
+            </div>
+
+            <div class="menu-option"
+                 data-difficulty="insane">
+
+                <div class="option-label">
+                    DIFICULDADE
+                </div>
+
+                <div class="option-value">
+                    EC-X
+                </div>
+
+                <div class="option-desc">
+                    Para pilotos que querem
+                    testar o limite.
+                </div>
+
+            </div>
+
         </div>
+
+        <div class="menu-actions">
+
+            <button
+                class="primary-btn play"
+                id="playButton">
+                ▶ INICIAR MISSÃO
+            </button>
+
+            <button
+                class="secondary-btn menu-secondary"
+                id="profileButton">
+                🏆 CONQUISTAS
+            </button>
+
+            <button
+                class="secondary-btn menu-secondary"
+                id="settingsButton">
+                ⚙ CONFIGURAÇÕES
+            </button>
+
+        </div>
+
+        <div class="menu-footer">
+
+            <div>
+                RECORDE:
+                <span id="menuHighScore">0</span>
+            </div>
+
+            <div>
+                NÍVEL:
+                <span id="menuLevel">1</span>
+            </div>
+
+            <div>
+                XP:
+                <span id="menuXP">0</span>
+            </div>
+
+            <div>
+                WASD / SETAS • SPACE • SHIFT • P
+            </div>
+
+        </div>
+
     </div>
 </div>
+
+<!-- =======================================================
+     PROFILE
+======================================================= -->
+
+<div id="profilePanel">
+
+    <div class="profile-box glass">
+
+        <div class="profile-header">
+
+            <div class="profile-title">
+                PERFIL <span>EC-X</span>
+            </div>
+
+            <button
+                class="icon-btn"
+                id="closeProfile">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat">
+                <div class="stat-label">
+                    RECORDE
+                </div>
+                <div
+                    class="stat-value"
+                    id="profileScore">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    MISSÕES
+                </div>
+                <div
+                    class="stat-value"
+                    id="profileGames">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    ABATES
+                </div>
+                <div
+                    class="stat-value"
+                    id="profileKills">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    NÍVEL
+                </div>
+                <div
+                    class="stat-value"
+                    id="profileLevel">
+                    1
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            class="achievement-list"
+            id="achievementList">
+        </div>
+
+    </div>
+</div>
+
+<!-- =======================================================
+     SETTINGS
+======================================================= -->
+
+<div id="settingsPanel"
+     class="hidden"
+     style="
+        position:fixed;
+        inset:0;
+        z-index:7000;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        background:rgba(0,0,0,.72);
+        backdrop-filter:blur(15px);
+     ">
+
+    <div
+        class="profile-box glass"
+        style="max-width:520px">
+
+        <div class="profile-header">
+
+            <div class="profile-title">
+                CONFIGURAÇÕES
+            </div>
+
+            <button
+                class="icon-btn"
+                id="closeSettings">
+                ✕
+            </button>
+
+        </div>
+
+        <div style="
+            display:grid;
+            gap:10px;
+            margin-top:22px;
+        ">
+
+            <label class="menu-option">
+                <div class="option-label">
+                    QUALIDADE
+                </div>
+
+                <select
+                    id="qualitySelect"
+                    style="
+                        width:100%;
+                        padding:12px;
+                        margin-top:5px;
+                        border-radius:10px;
+                        color:#fff;
+                        background:#080d20;
+                        border:1px solid #1d2943;
+                    ">
+
+                    <option value="low">
+                        Baixa
+                    </option>
+
+                    <option value="medium" selected>
+                        Média
+                    </option>
+
+                    <option value="high">
+                        Alta
+                    </option>
+
+                </select>
+            </label>
+
+            <label class="menu-option">
+                <div class="option-label">
+                    EFEITOS
+                </div>
+
+                <input
+                    type="checkbox"
+                    id="effectsToggle"
+                    checked
+                    style="margin-top:10px">
+
+                Ativar partículas e efeitos
+            </label>
+
+            <label class="menu-option">
+                <div class="option-label">
+                    VIBRAÇÃO
+                </div>
+
+                <input
+                    type="checkbox"
+                    id="vibrationToggle"
+                    checked
+                    style="margin-top:10px">
+
+                Vibração em impactos
+            </label>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- =======================================================
+     HUD
+======================================================= -->
 
 <div id="hud">
 
     <div class="top">
 
         <div class="hud-card">
-            <div class="hud-label">PONTUAÇÃO</div>
-            <div class="hud-value" id="score">0</div>
+
+            <div class="hud-label">
+                PONTUAÇÃO
+            </div>
+
+            <div
+                class="hud-value"
+                id="score">
+                0
+            </div>
+
         </div>
 
         <div class="hud-card">
-            <div class="hud-label">VELOCIDADE</div>
-            <div class="hud-value" id="speed">0 KM/H</div>
+
+            <div class="hud-label">
+                VELOCIDADE
+            </div>
+
+            <div
+                class="hud-value"
+                id="speed">
+                0 KM/H
+            </div>
+
         </div>
 
         <div class="hud-card">
-            <div class="hud-label">VIDAS</div>
-            <div class="hud-value" id="lives">♥ ♥ ♥</div>
+
+            <div class="hud-label">
+                VIDAS
+            </div>
+
+            <div
+                class="hud-value"
+                id="lives">
+                ♥ ♥ ♥
+            </div>
+
         </div>
 
         <div class="hud-card">
-            <div class="hud-label">COMBO</div>
-            <div class="hud-value" id="combo">x1</div>
+
+            <div class="hud-label">
+                COMBO
+            </div>
+
+            <div
+                class="hud-value"
+                id="combo">
+                x1
+            </div>
+
         </div>
 
     </div>
 
     <div class="health">
+
         <div id="healthBar"></div>
+
     </div>
 
     <div id="mission">
@@ -602,84 +1793,361 @@ body{
     <div id="crosshair"></div>
 
     <div id="announcement">
-        <h2 id="announcementTitle">AVIONECX</h2>
-        <p id="announcementText">Missão iniciada.</p>
+
+        <h2 id="announcementTitle">
+            AVIONECX
+        </h2>
+
+        <p id="announcementText">
+            Missão iniciada.
+        </p>
+
     </div>
 
     <div id="achievement">
-        <div class="ach-title">🏆 CONQUISTA DESBLOQUEADA</div>
-        <div class="ach-name" id="achName">Primeiro Voo</div>
-        <div class="ach-desc" id="achDesc">Você entrou no AVIONECX.</div>
+
+        <div class="ach-title">
+            🏆 CONQUISTA DESBLOQUEADA
+        </div>
+
+        <div
+            class="ach-name"
+            id="achName">
+            Primeiro Voo
+        </div>
+
+        <div
+            class="ach-desc"
+            id="achDesc">
+            Você entrou no AVIONECX.
+        </div>
+
     </div>
 
     <div id="bottom">
+
         <div class="help">
             WASD • SPACE • SHIFT • P
         </div>
-        <button id="pause">Ⅱ PAUSAR</button>
+
+        <button id="pause">
+            Ⅱ PAUSAR
+        </button>
+
     </div>
+
 </div>
+
+<!-- =======================================================
+     MOBILE
+======================================================= -->
 
 <div id="mobile">
-    <div class="mbtn" id="mUp">▲</div>
-    <div class="mbtn" id="mDown">▼</div>
-    <div class="mbtn" id="mLeft">◀</div>
-    <div class="mbtn" id="mRight">▶</div>
-    <div class="mbtn" id="mBoost">⚡</div>
-    <div class="mbtn" id="mFire">🔥</div>
+
+    <div class="mbtn" id="mUp">
+        ▲
+    </div>
+
+    <div class="mbtn" id="mDown">
+        ▼
+    </div>
+
+    <div class="mbtn" id="mLeft">
+        ◀
+    </div>
+
+    <div class="mbtn" id="mRight">
+        ▶
+    </div>
+
+    <div class="mbtn" id="mBoost">
+        ⚡
+    </div>
+
+    <div class="mbtn" id="mFire">
+        🔥
+    </div>
+
 </div>
+
+<!-- =======================================================
+     PAUSE
+======================================================= -->
 
 <div id="pauseScreen">
+
     <div class="pause-box">
-        <h2>JOGO PAUSADO</h2>
-        <p>Pressione P para continuar</p>
+
+        <h2>
+            JOGO PAUSADO
+        </h2>
+
+        <p>
+            O voo está temporariamente suspenso.
+        </p>
+
+        <div class="pause-buttons">
+
+            <button
+                class="primary-btn"
+                id="resumeButton"
+                style="padding:12px 20px">
+                ▶ CONTINUAR
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="quitButton"
+                style="padding:12px 20px">
+                ⌂ MENU
+            </button>
+
+        </div>
+
     </div>
+
 </div>
 
+<!-- =======================================================
+     GAME OVER
+======================================================= -->
+
 <div id="gameOver">
+
     <div class="gameover-box">
-        <h1>MISSÃO ENCERRADA</h1>
-        <p>O AVIONECX sofreu danos críticos.</p>
-        <div class="final-score" id="finalScore">0</div>
-        <button class="restart" id="restartButton">
+
+        <h1>
+            MISSÃO ENCERRADA
+        </h1>
+
+        <p>
+            O AVIONECX sofreu danos críticos.
+        </p>
+
+        <div
+            class="final-score"
+            id="finalScore">
+            0
+        </div>
+
+        <div class="final-meta">
+
+            <div class="final-stat">
+
+                <span>
+                    ABATES
+                </span>
+
+                <strong id="finalKills">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="final-stat">
+
+                <span>
+                    COMBO MÁXIMO
+                </span>
+
+                <strong id="finalCombo">
+                    x1
+                </strong>
+
+            </div>
+
+        </div>
+
+        <button
+            class="primary-btn restart"
+            id="restartButton">
             ↻ NOVA MISSÃO
         </button>
+
+        <button
+            class="secondary-btn"
+            id="gameMenuButton"
+            style="
+                padding:14px 25px;
+                margin-left:6px;
+            ">
+            ⌂ MENU
+        </button>
+
     </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-/* ============================================================
-   AVIONECX 3D
-   ============================================================ */
+/* =========================================================
+   AVIONECX 2.0
+   ENGINE
+========================================================= */
 
-const canvas = document.getElementById("game");
-const loading = document.getElementById("loading");
-const menu = document.getElementById("menu");
-const playButton = document.getElementById("playButton");
-const hud = document.getElementById("hud");
+"use strict";
 
-const scoreEl = document.getElementById("score");
-const speedEl = document.getElementById("speed");
-const livesEl = document.getElementById("lives");
-const comboEl = document.getElementById("combo");
-const healthBar = document.getElementById("healthBar");
+/* =========================================================
+   DOM
+========================================================= */
 
-const announcement = document.getElementById("announcement");
-const announcementTitle = document.getElementById("announcementTitle");
-const announcementText = document.getElementById("announcementText");
+const canvas =
+    document.getElementById("game");
 
-const achievement = document.getElementById("achievement");
-const achName = document.getElementById("achName");
-const achDesc = document.getElementById("achDesc");
+const loading =
+    document.getElementById("loading");
 
-const pauseButton = document.getElementById("pause");
-const pauseScreen = document.getElementById("pauseScreen");
+const menu =
+    document.getElementById("menu");
 
-const gameOver = document.getElementById("gameOver");
-const finalScore = document.getElementById("finalScore");
-const restartButton = document.getElementById("restartButton");
+const playButton =
+    document.getElementById("playButton");
+
+const hud =
+    document.getElementById("hud");
+
+const scoreEl =
+    document.getElementById("score");
+
+const speedEl =
+    document.getElementById("speed");
+
+const livesEl =
+    document.getElementById("lives");
+
+const comboEl =
+    document.getElementById("combo");
+
+const healthBar =
+    document.getElementById("healthBar");
+
+const missionEl =
+    document.getElementById("mission");
+
+const announcement =
+    document.getElementById("announcement");
+
+const announcementTitle =
+    document.getElementById("announcementTitle");
+
+const announcementText =
+    document.getElementById("announcementText");
+
+const achievementPopup =
+    document.getElementById("achievement");
+
+const achName =
+    document.getElementById("achName");
+
+const achDesc =
+    document.getElementById("achDesc");
+
+const pauseButton =
+    document.getElementById("pause");
+
+const pauseScreen =
+    document.getElementById("pauseScreen");
+
+const resumeButton =
+    document.getElementById("resumeButton");
+
+const quitButton =
+    document.getElementById("quitButton");
+
+const gameOver =
+    document.getElementById("gameOver");
+
+const restartButton =
+    document.getElementById("restartButton");
+
+const gameMenuButton =
+    document.getElementById("gameMenuButton");
+
+const profilePanel =
+    document.getElementById("profilePanel");
+
+const profileButton =
+    document.getElementById("profileButton");
+
+const closeProfile =
+    document.getElementById("closeProfile");
+
+const settingsPanel =
+    document.getElementById("settingsPanel");
+
+const settingsButton =
+    document.getElementById("settingsButton");
+
+const closeSettings =
+    document.getElementById("closeSettings");
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const STORAGE_KEY =
+    "avionecx_2_profile";
+
+const defaultProfile = {
+    highScore:0,
+    games:0,
+    kills:0,
+    xp:0,
+    level:1,
+    achievements:{}
+};
+
+function loadProfile(){
+
+    try{
+
+        const raw =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if(!raw)
+            return structuredClone(defaultProfile);
+
+        const parsed =
+            JSON.parse(raw);
+
+        return {
+            ...structuredClone(defaultProfile),
+            ...parsed,
+            achievements:{
+                ...defaultProfile.achievements,
+                ...(parsed.achievements || {})
+            }
+        };
+
+    }catch{
+
+        return structuredClone(
+            defaultProfile
+        );
+    }
+}
+
+let profile =
+    loadProfile();
+
+function saveProfile(){
+
+    try{
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(profile)
+        );
+
+    }catch{}
+}
+
+/* =========================================================
+   GAME STATE
+========================================================= */
 
 let scene;
 let camera;
@@ -689,134 +2157,549 @@ let clock;
 let airplane;
 let airplaneBody;
 let airplaneLight;
+let airplaneEngine;
 
 let started = false;
 let paused = false;
 let gameEnded = false;
 
 let score = 0;
-let highScore = Number(localStorage.getItem("avionecxHighScore") || 0);
-
 let health = 100;
 let lives = 3;
-let combo = 1;
 
-let distance = 0;
+let combo = 1;
+let maxCombo = 1;
+
 let elapsed = 0;
+let distance = 0;
+let destroyedCount = 0;
 
 let fireCooldown = 0;
 let spawnTimer = 0;
-let particleTimer = 0;
+let powerupTimer = 10;
+
+let shake = 0;
 
 let baseSpeed = 45;
 
-let shake = 0;
-let flash = 0;
+let selectedMode = "mission";
+let selectedDifficulty = "normal";
+
+let timeLimit = 90;
+let remainingTime = 90;
+
+let effectsEnabled = true;
+let vibrationEnabled = true;
+
+let lastFrameTime = 0;
 
 const keys = {};
+
 const bullets = [];
 const obstacles = [];
 const particles = [];
 const rings = [];
 const stars = [];
+const powerups = [];
+const worldObjects = [];
 
-const achievements = {
-    firstFlight:false,
-    destroy1:false,
-    destroy10:false,
-    destroy25:false,
-    score1000:false,
-    score5000:false,
-    survive60:false,
-    turbo:false
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const difficultyConfig = {
+
+    normal:{
+        speed:1,
+        spawn:.9,
+        damage:35,
+        lives:3
+    },
+
+    hard:{
+        speed:1.25,
+        spawn:.68,
+        damage:45,
+        lives:3
+    },
+
+    insane:{
+        speed:1.55,
+        spawn:.5,
+        damage:55,
+        lives:2
+    }
+
 };
 
-let destroyedCount = 0;
+const achievements = {
 
-/* ============================================================
+    firstFlight:{
+        name:"Primeiro Voo",
+        desc:"Realize seu primeiro voo."
+    },
+
+    destroy1:{
+        name:"Primeiro Impacto",
+        desc:"Destrua seu primeiro obstáculo."
+    },
+
+    destroy10:{
+        name:"Caçador",
+        desc:"Destrua 10 obstáculos."
+    },
+
+    destroy25:{
+        name:"Lenda do Céu",
+        desc:"Destrua 25 obstáculos."
+    },
+
+    destroy50:{
+        name:"Exterminador",
+        desc:"Destrua 50 obstáculos."
+    },
+
+    score1000:{
+        name:"Piloto Promissor",
+        desc:"Alcance 1.000 pontos."
+    },
+
+    score5000:{
+        name:"Mestre do Céu",
+        desc:"Alcance 5.000 pontos."
+    },
+
+    score10000:{
+        name:"Além do Limite",
+        desc:"Alcance 10.000 pontos."
+    },
+
+    survive60:{
+        name:"Sobrevivente",
+        desc:"Sobreviva por 60 segundos."
+    },
+
+    survive180:{
+        name:"Fantasma",
+        desc:"Sobreviva por 3 minutos."
+    },
+
+    turbo:{
+        name:"Alta Velocidade",
+        desc:"Use o turbo."
+    },
+
+    combo10:{
+        name:"Combo x10",
+        desc:"Alcance combo 10."
+    },
+
+    combo20:{
+        name:"Combo x20",
+        desc:"Alcance combo 20."
+    },
+
+    checkpoint:{
+        name:"Precisão",
+        desc:"Atravesse um checkpoint."
+    },
+
+    collector:{
+        name:"Colecionador",
+        desc:"Colete um power-up."
+    },
+
+    hard:{
+        name:"Piloto Extremo",
+        desc:"Complete uma missão no modo extremo."
+    },
+
+    survivorMode:{
+        name:"Sobrevivência",
+        desc:"Jogue no modo Sobrevivência."
+    },
+
+    timeMode:{
+        name:"Contra o Tempo",
+        desc:"Jogue no modo Contra o Tempo."
+    }
+
+};
+
+/* =========================================================
    INPUT
-   ============================================================ */
+========================================================= */
 
-window.addEventListener("keydown", e=>{
-    keys[e.code] = true;
+window.addEventListener(
+    "keydown",
+    e=>{
 
-    if(e.code === "Space"){
+        keys[e.code] = true;
+
+        if(e.code === "Space")
+            e.preventDefault();
+
+        if(
+            e.code === "KeyP" &&
+            started &&
+            !gameEnded
+        ){
+            togglePause();
+        }
+
+        if(
+            e.code === "Escape" &&
+            started &&
+            !gameEnded
+        ){
+            togglePause();
+        }
+
+        if(
+            e.code === "Space" &&
+            started &&
+            !paused
+        ){
+            shoot();
+        }
+
+    }
+);
+
+window.addEventListener(
+    "keyup",
+    e=>{
+        keys[e.code] = false;
+    }
+);
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+function bindMobileButton(
+    id,
+    code
+){
+
+    const element =
+        document.getElementById(id);
+
+    const press = e=>{
+
         e.preventDefault();
-    }
 
-    if(e.code === "KeyP"){
-        togglePause();
-    }
-
-    if(e.code === "Space" && started && !paused){
-        shoot();
-    }
-});
-
-window.addEventListener("keyup", e=>{
-    keys[e.code] = false;
-});
-
-playButton.onclick = startGame;
-restartButton.onclick = restartGame;
-pauseButton.onclick = togglePause;
-
-/* ============================================================
-   MOBILE INPUT
-   ============================================================ */
-
-function mobileHold(id,code){
-    const el = document.getElementById(id);
-
-    const down = e=>{
-        e.preventDefault();
         keys[code] = true;
+
+        if(
+            vibrationEnabled &&
+            navigator.vibrate
+        ){
+            navigator.vibrate(8);
+        }
+
     };
 
-    const up = e=>{
+    const release = e=>{
+
         e.preventDefault();
+
         keys[code] = false;
+
     };
 
-    el.addEventListener("touchstart",down,{passive:false});
-    el.addEventListener("touchend",up,{passive:false});
-    el.addEventListener("touchcancel",up,{passive:false});
+    element.addEventListener(
+        "touchstart",
+        press,
+        {passive:false}
+    );
+
+    element.addEventListener(
+        "touchend",
+        release,
+        {passive:false}
+    );
+
+    element.addEventListener(
+        "touchcancel",
+        release,
+        {passive:false}
+    );
 }
 
-mobileHold("mUp","KeyW");
-mobileHold("mDown","KeyS");
-mobileHold("mLeft","KeyA");
-mobileHold("mRight","KeyD");
-mobileHold("mBoost","ShiftLeft");
+bindMobileButton(
+    "mUp",
+    "KeyW"
+);
 
-document.getElementById("mFire").addEventListener("touchstart",e=>{
-    e.preventDefault();
-    shoot();
-},{passive:false});
+bindMobileButton(
+    "mDown",
+    "KeyS"
+);
 
-/* ============================================================
+bindMobileButton(
+    "mLeft",
+    "KeyA"
+);
+
+bindMobileButton(
+    "mRight",
+    "KeyD"
+);
+
+bindMobileButton(
+    "mBoost",
+    "ShiftLeft"
+);
+
+document
+    .getElementById("mFire")
+    .addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            shoot();
+        },
+        {passive:false}
+    );
+
+/* =========================================================
+   MENU SELECTION
+========================================================= */
+
+document
+    .querySelectorAll("[data-mode]")
+    .forEach(el=>{
+
+        el.addEventListener(
+            "click",
+            ()=>{
+
+                document
+                    .querySelectorAll(
+                        "[data-mode]"
+                    )
+                    .forEach(
+                        x=>
+                        x.classList.remove(
+                            "active"
+                        )
+                    );
+
+                el.classList.add(
+                    "active"
+                );
+
+                selectedMode =
+                    el.dataset.mode;
+
+            }
+        );
+
+    });
+
+document
+    .querySelectorAll("[data-difficulty]")
+    .forEach(el=>{
+
+        el.addEventListener(
+            "click",
+            ()=>{
+
+                document
+                    .querySelectorAll(
+                        "[data-difficulty]"
+                    )
+                    .forEach(
+                        x=>
+                        x.classList.remove(
+                            "active"
+                        )
+                    );
+
+                el.classList.add(
+                    "active"
+                );
+
+                selectedDifficulty =
+                    el.dataset.difficulty;
+
+            }
+        );
+
+    });
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function updateProfileUI(){
+
+    document
+        .getElementById("menuHighScore")
+        .textContent =
+        profile.highScore;
+
+    document
+        .getElementById("menuLevel")
+        .textContent =
+        profile.level;
+
+    document
+        .getElementById("menuXP")
+        .textContent =
+        profile.xp;
+
+    document
+        .getElementById("profileScore")
+        .textContent =
+        profile.highScore;
+
+    document
+        .getElementById("profileGames")
+        .textContent =
+        profile.games;
+
+    document
+        .getElementById("profileKills")
+        .textContent =
+        profile.kills;
+
+    document
+        .getElementById("profileLevel")
+        .textContent =
+        profile.level;
+
+    const list =
+        document.getElementById(
+            "achievementList"
+        );
+
+    list.innerHTML = "";
+
+    Object.entries(
+        achievements
+    ).forEach(
+        ([key,data])=>{
+
+            const unlocked =
+                !!profile.achievements[key];
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "achievement-item" +
+                (unlocked
+                    ? " unlocked"
+                    : "");
+
+            item.innerHTML = `
+                <strong>
+                    ${unlocked ? "🏆" : "🔒"}
+                    ${data.name}
+                </strong>
+                <small>
+                    ${data.desc}
+                </small>
+            `;
+
+            list.appendChild(item);
+
+        }
+    );
+}
+
+profileButton.onclick = ()=>{
+
+    updateProfileUI();
+
+    profilePanel.style.display =
+        "flex";
+};
+
+closeProfile.onclick = ()=>{
+
+    profilePanel.style.display =
+        "none";
+};
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+settingsButton.onclick = ()=>{
+
+    settingsPanel.classList.remove(
+        "hidden"
+    );
+
+    settingsPanel.style.display =
+        "flex";
+};
+
+closeSettings.onclick = ()=>{
+
+    settingsPanel.style.display =
+        "none";
+
+    settingsPanel.classList.add(
+        "hidden"
+    );
+};
+
+document
+    .getElementById("effectsToggle")
+    .addEventListener(
+        "change",
+        e=>{
+            effectsEnabled =
+                e.target.checked;
+        }
+    );
+
+document
+    .getElementById("vibrationToggle")
+    .addEventListener(
+        "change",
+        e=>{
+            vibrationEnabled =
+                e.target.checked;
+        }
+    );
+
+/* =========================================================
    INIT
-   ============================================================ */
+========================================================= */
 
 function init(){
 
-    scene = new THREE.Scene();
+    scene =
+        new THREE.Scene();
 
-    scene.background = new THREE.Color(0x02030a);
+    scene.background =
+        new THREE.Color(
+            0x02030a
+        );
 
-    scene.fog = new THREE.FogExp2(
-        0x02030a,
-        .008
-    );
+    scene.fog =
+        new THREE.FogExp2(
+            0x02030a,
+            .0065
+        );
 
-    clock = new THREE.Clock();
+    clock =
+        new THREE.Clock();
 
-    camera = new THREE.PerspectiveCamera(
-        70,
-        innerWidth / innerHeight,
-        .1,
-        2000
-    );
+    camera =
+        new THREE.PerspectiveCamera(
+            68,
+            innerWidth / innerHeight,
+            .1,
+            2000
+        );
 
     camera.position.set(
         0,
@@ -824,11 +2707,13 @@ function init(){
         18
     );
 
-    renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias:true,
-        powerPreference:"high-performance"
-    });
+    renderer =
+        new THREE.WebGLRenderer({
+            canvas,
+            antialias:true,
+            powerPreference:
+                "high-performance"
+        });
 
     renderer.setSize(
         innerWidth,
@@ -836,18 +2721,35 @@ function init(){
     );
 
     renderer.setPixelRatio(
-        Math.min(devicePixelRatio,2)
+        Math.min(
+            devicePixelRatio,
+            1.75
+        )
     );
 
-    renderer.shadowMap.enabled = true;
+    renderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+
+    renderer.toneMapping =
+        THREE.ACESFilmicToneMapping;
+
+    renderer.toneMappingExposure =
+        1.15;
+
+    renderer.shadowMap.enabled =
+        true;
 
     renderer.shadowMap.type =
         THREE.PCFSoftShadowMap;
 
     createLights();
+
     createWorld();
+
     createStars();
+
     createAirplane();
+
     createRings();
 
     window.addEventListener(
@@ -855,111 +2757,144 @@ function init(){
         resize
     );
 
+    window.addEventListener(
+        "orientationchange",
+        ()=>{
+            setTimeout(
+                resize,
+                150
+            );
+        }
+    );
+
+    updateProfileUI();
+
     animate();
 
-    setTimeout(()=>{
-        loading.classList.add("hide");
-    },700);
+    setTimeout(
+        ()=>{
+            loading.classList.add(
+                "hide"
+            );
+        },
+        1600
+    );
 }
 
-/* ============================================================
+/* =========================================================
    LIGHTS
-   ============================================================ */
+========================================================= */
 
 function createLights(){
 
     const hemi =
         new THREE.HemisphereLight(
             0x6ea8ff,
-            0x050509,
-            1.7
+            0x03040a,
+            1.8
         );
 
-    scene.add(hemi);
+    scene.add(
+        hemi
+    );
 
     const sun =
         new THREE.DirectionalLight(
-            0xffffff,
-            2
+            0xcfe6ff,
+            2.4
         );
 
     sun.position.set(
         80,
         120,
-        40
+        50
     );
 
-    sun.castShadow = true;
+    sun.castShadow =
+        true;
 
-    sun.shadow.mapSize.width = 2048;
-    sun.shadow.mapSize.height = 2048;
+    sun.shadow.mapSize.set(
+        2048,
+        2048
+    );
 
-    scene.add(sun);
+    sun.shadow.camera.near =
+        1;
 
-    const blue =
+    sun.shadow.camera.far =
+        500;
+
+    scene.add(
+        sun
+    );
+
+    const cyan =
         new THREE.PointLight(
             0x00eaff,
-            15,
-            120
+            18,
+            140
         );
 
-    blue.position.set(
+    cyan.position.set(
         0,
-        15,
-        -50
+        20,
+        -60
     );
 
-    scene.add(blue);
+    scene.add(
+        cyan
+    );
 
     const purple =
         new THREE.PointLight(
             0x7c3aed,
-            12,
-            100
+            14,
+            130
         );
 
     purple.position.set(
-        40,
-        10,
-        -120
+        55,
+        12,
+        -150
     );
 
-    scene.add(purple);
+    scene.add(
+        purple
+    );
+
 }
 
-/* ============================================================
+/* =========================================================
    WORLD
-   ============================================================ */
+========================================================= */
 
 function createWorld(){
 
-    const groundGeometry =
-        new THREE.PlaneGeometry(
-            1000,
-            1000
-        );
-
-    const groundMaterial =
-        new THREE.MeshStandardMaterial({
-            color:0x050a16,
-            roughness:.9,
-            metalness:.15
-        });
-
     const ground =
         new THREE.Mesh(
-            groundGeometry,
-            groundMaterial
+            new THREE.PlaneGeometry(
+                1200,
+                1200
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x050a16,
+                roughness:.92,
+                metalness:.12
+            })
         );
 
     ground.rotation.x =
         -Math.PI/2;
 
-    ground.position.y = -12;
+    ground.position.y =
+        -12;
 
-    ground.receiveShadow = true;
+    ground.receiveShadow =
+        true;
 
-    scene.add(ground);
+    scene.add(
+        ground
+    );
 
     const grid =
         new THREE.GridHelper(
@@ -969,29 +2904,61 @@ function createWorld(){
             0x07101c
         );
 
-    grid.position.y = -11.9;
+    grid.position.y =
+        -11.9;
 
-    scene.add(grid);
+    scene.add(
+        grid
+    );
+
+    worldObjects.push(
+        grid
+    );
 
     createCity();
+
 }
 
-/* ============================================================
-   CITY / LANDMARKS
-   ============================================================ */
+/* =========================================================
+   CITY
+========================================================= */
 
 function createCity(){
 
-    for(let i=0;i<35;i++){
+    for(
+        let i=0;
+        i<50;
+        i++
+    ){
 
         const h =
-            5 + Math.random()*25;
+            5 +
+            Math.random()*30;
 
         const w =
-            4 + Math.random()*8;
+            4 +
+            Math.random()*8;
 
         const d =
-            4 + Math.random()*8;
+            4 +
+            Math.random()*8;
+
+        const material =
+            new THREE.MeshStandardMaterial({
+
+                color:
+                    new THREE.Color(
+                        .01,
+                        .018 +
+                        Math.random()*.025,
+                        .055 +
+                        Math.random()*.08
+                    ),
+
+                metalness:.75,
+                roughness:.25
+
+            });
 
         const building =
             new THREE.Mesh(
@@ -1000,73 +2967,78 @@ function createCity(){
                     h,
                     d
                 ),
-                new THREE.MeshStandardMaterial({
-                    color:
-                        new THREE.Color(
-                            .015,
-                            .025 + Math.random()*.02,
-                            .07 + Math.random()*.06
-                        ),
-                    metalness:.7,
-                    roughness:.25
-                })
+                material
             );
 
         building.position.set(
-            (Math.random()-.5)*300,
+            (Math.random()-.5)*350,
             -12+h/2,
-            -40-Math.random()*300
+            -40-Math.random()*450
         );
 
-        building.castShadow = true;
+        building.castShadow =
+            true;
 
-        scene.add(building);
+        scene.add(
+            building
+        );
 
-        const glow =
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    w+.1,
-                    .12,
-                    d+.1
-                ),
-                new THREE.MeshBasicMaterial({
-                    color:
-                        Math.random()>.5
-                            ? 0x00eaff
-                            : 0x7c3aed
-                })
+        if(Math.random() > .25){
+
+            const color =
+                Math.random()>.5
+                    ? 0x00eaff
+                    : 0x7c3aed;
+
+            const glow =
+                new THREE.Mesh(
+                    new THREE.BoxGeometry(
+                        w+.1,
+                        .12,
+                        d+.1
+                    ),
+                    new THREE.MeshBasicMaterial({
+                        color
+                    })
+                );
+
+            glow.position.copy(
+                building.position
             );
 
-        glow.position.copy(
-            building.position
-        );
+            glow.position.y =
+                -12+h;
 
-        glow.position.y =
-            -12+h;
+            scene.add(
+                glow
+            );
 
-        scene.add(glow);
+        }
+
     }
 
     createLandmark(
         -55,
         -90,
-        0x00eaff,
-        "EC"
+        0x00eaff
     );
 
     createLandmark(
-        60,
-        -150,
-        0x7c3aed,
-        "ECx"
+        65,
+        -170,
+        0x7c3aed
     );
+
 }
+
+/* =========================================================
+   LANDMARK
+========================================================= */
 
 function createLandmark(
     x,
     z,
-    color,
-    text
+    color
 ){
 
     const tower =
@@ -1079,8 +3051,8 @@ function createLandmark(
             ),
             new THREE.MeshStandardMaterial({
                 color:0x070c1d,
-                metalness:.8,
-                roughness:.2
+                metalness:.82,
+                roughness:.18
             })
         );
 
@@ -1090,24 +3062,29 @@ function createLandmark(
         z
     );
 
-    tower.castShadow = true;
+    tower.castShadow =
+        true;
 
-    scene.add(tower);
+    scene.add(
+        tower
+    );
 
     const light =
         new THREE.PointLight(
             color,
-            20,
-            80
+            25,
+            90
         );
 
     light.position.set(
         x,
-        20,
+        25,
         z
     );
 
-    scene.add(light);
+    scene.add(
+        light
+    );
 
     const ring =
         new THREE.Mesh(
@@ -1131,23 +3108,31 @@ function createLandmark(
     ring.rotation.x =
         Math.PI/2;
 
-    scene.add(ring);
+    scene.add(
+        ring
+    );
+
 }
 
-/* ============================================================
+/* =========================================================
    STARS
-   ============================================================ */
+========================================================= */
 
 function createStars(){
 
-    const count = 4500;
+    const count =
+        4200;
 
     const positions =
         new Float32Array(
             count*3
         );
 
-    for(let i=0;i<count;i++){
+    for(
+        let i=0;
+        i<count;
+        i++
+    ){
 
         positions[i*3] =
             (Math.random()-.5)*1200;
@@ -1157,6 +3142,7 @@ function createStars(){
 
         positions[i*3+2] =
             -Math.random()*1200;
+
     }
 
     const geometry =
@@ -1173,33 +3159,36 @@ function createStars(){
     const material =
         new THREE.PointsMaterial({
             color:0xffffff,
-            size:1.4,
+            size:1.35,
             sizeAttenuation:true
         });
 
-    const starField =
+    const field =
         new THREE.Points(
             geometry,
             material
         );
 
-    scene.add(starField);
+    scene.add(
+        field
+    );
 
-    stars.push(starField);
+    stars.push(
+        field
+    );
+
 }
 
-/* ============================================================
+/* =========================================================
    AIRPLANE
-   ============================================================ */
+========================================================= */
 
 function createAirplane(){
 
     airplane =
         new THREE.Group();
 
-    /* BODY */
-
-    const body =
+    airplaneBody =
         new THREE.Mesh(
             new THREE.CapsuleGeometry(
                 .65,
@@ -1209,23 +3198,22 @@ function createAirplane(){
             ),
             new THREE.MeshStandardMaterial({
                 color:0x0a1429,
-                metalness:.85,
-                roughness:.2,
+                metalness:.9,
+                roughness:.17,
                 emissive:0x001522,
-                emissiveIntensity:.4
+                emissiveIntensity:.5
             })
         );
 
-    body.rotation.x =
+    airplaneBody.rotation.x =
         Math.PI/2;
 
-    body.castShadow = true;
+    airplaneBody.castShadow =
+        true;
 
-    airplaneBody = body;
-
-    airplane.add(body);
-
-    /* NOSE */
+    airplane.add(
+        airplaneBody
+    );
 
     const nose =
         new THREE.Mesh(
@@ -1236,29 +3224,28 @@ function createAirplane(){
             ),
             new THREE.MeshStandardMaterial({
                 color:0x00dfff,
-                metalness:.8,
-                roughness:.2,
+                metalness:.85,
+                roughness:.16,
                 emissive:0x003c50,
-                emissiveIntensity:.7
+                emissiveIntensity:.8
             })
         );
 
     nose.rotation.x =
         -Math.PI/2;
 
-    nose.position.z = -3;
+    nose.position.z =
+        -3;
 
-    nose.castShadow = true;
+    airplane.add(
+        nose
+    );
 
-    airplane.add(nose);
-
-    /* WINGS */
-
-    const wingMat =
+    const wingMaterial =
         new THREE.MeshStandardMaterial({
             color:0x111b34,
-            metalness:.9,
-            roughness:.18
+            metalness:.92,
+            roughness:.15
         });
 
     const wing =
@@ -1268,16 +3255,18 @@ function createAirplane(){
                 .18,
                 1.7
             ),
-            wingMat
+            wingMaterial
         );
 
-    wing.position.z = .2;
+    wing.position.z =
+        .2;
 
-    wing.castShadow = true;
+    wing.castShadow =
+        true;
 
-    airplane.add(wing);
-
-    /* TAIL WING */
+    airplane.add(
+        wing
+    );
 
     const tailWing =
         new THREE.Mesh(
@@ -1286,7 +3275,7 @@ function createAirplane(){
                 .15,
                 1.1
             ),
-            wingMat
+            wingMaterial
         );
 
     tailWing.position.set(
@@ -1295,11 +3284,11 @@ function createAirplane(){
         2
     );
 
-    airplane.add(tailWing);
+    airplane.add(
+        tailWing
+    );
 
-    /* VERTICAL TAIL */
-
-    const tail =
+    const verticalTail =
         new THREE.Mesh(
             new THREE.BoxGeometry(
                 .15,
@@ -1309,22 +3298,22 @@ function createAirplane(){
             new THREE.MeshStandardMaterial({
                 color:0x7c3aed,
                 emissive:0x26005a,
-                emissiveIntensity:.5,
-                metalness:.7
+                emissiveIntensity:.55,
+                metalness:.75
             })
         );
 
-    tail.position.set(
+    verticalTail.position.set(
         0,
         .8,
         1.8
     );
 
-    airplane.add(tail);
+    airplane.add(
+        verticalTail
+    );
 
-    /* ENGINE GLOW */
-
-    const engine =
+    airplaneEngine =
         new THREE.Mesh(
             new THREE.CylinderGeometry(
                 .42,
@@ -1337,23 +3326,25 @@ function createAirplane(){
             })
         );
 
-    engine.rotation.x =
+    airplaneEngine.rotation.x =
         Math.PI/2;
 
-    engine.position.z = 2.5;
+    airplaneEngine.position.z =
+        2.5;
 
-    airplane.add(engine);
-
-    /* ENGINE LIGHT */
+    airplane.add(
+        airplaneEngine
+    );
 
     airplaneLight =
         new THREE.PointLight(
             0x00eaff,
-            5,
+            6,
             18
         );
 
-    airplaneLight.position.z = 3;
+    airplaneLight.position.z =
+        3;
 
     airplane.add(
         airplaneLight
@@ -1365,16 +3356,23 @@ function createAirplane(){
         10
     );
 
-    scene.add(airplane);
+    scene.add(
+        airplane
+    );
+
 }
 
-/* ============================================================
-   FLIGHT RINGS
-   ============================================================ */
+/* =========================================================
+   RINGS
+========================================================= */
 
 function createRings(){
 
-    for(let i=0;i<10;i++){
+    for(
+        let i=0;
+        i<12;
+        i++
+    ){
 
         const ring =
             new THREE.Mesh(
@@ -1393,82 +3391,191 @@ function createRings(){
             );
 
         ring.position.set(
-            (Math.random()-.5)*50,
-            (Math.random()-.5)*20,
-            -50-i*45
+            (Math.random()-.5)*55,
+            -3+Math.random()*22,
+            -60-i*50
         );
 
         ring.rotation.y =
             Math.random();
 
-        scene.add(ring);
+        scene.add(
+            ring
+        );
 
-        rings.push(ring);
+        rings.push(
+            ring
+        );
+
     }
+
 }
 
-/* ============================================================
-   START
-   ============================================================ */
+/* =========================================================
+   START GAME
+========================================================= */
 
 function startGame(){
 
-    if(started) return;
+    if(started)
+        return;
 
     started = true;
-
     paused = false;
-
     gameEnded = false;
 
-    menu.classList.add("hide");
-
-    hud.classList.add("active");
+    configureMode();
 
     resetGame();
 
+    menu.classList.add(
+        "hide"
+    );
+
+    hud.classList.add(
+        "active"
+    );
+
     showAnnouncement(
         "AVIONECX ONLINE",
-        "A aeronave ECx está pronta. Boa missão."
+        getModeText()
     );
 
     unlockAchievement(
-        "firstFlight",
-        "Primeiro Voo",
-        "Você realizou seu primeiro voo no AVIONECX."
+        "firstFlight"
     );
+
+    if(selectedMode === "survival")
+        unlockAchievement(
+            "survivorMode"
+        );
+
+    if(selectedMode === "time")
+        unlockAchievement(
+            "timeMode"
+        );
+
 }
 
-/* ============================================================
+/* =========================================================
+   MODE
+========================================================= */
+
+function configureMode(){
+
+    const diff =
+        difficultyConfig[
+            selectedDifficulty
+        ];
+
+    baseSpeed =
+        45 * diff.speed;
+
+    timeLimit =
+        selectedMode === "time"
+            ? 90
+            : 999999;
+
+    remainingTime =
+        timeLimit;
+
+    missionEl.textContent =
+        getMissionText();
+
+}
+
+function getModeText(){
+
+    if(selectedMode === "survival")
+        return "Modo Sobrevivência ativado.";
+
+    if(selectedMode === "time")
+        return "Você tem 90 segundos.";
+
+    return "Missão EC-X iniciada.";
+
+}
+
+function getMissionText(){
+
+    if(selectedMode === "survival")
+        return "MISSÃO: SOBREVIVA O MÁXIMO POSSÍVEL";
+
+    if(selectedMode === "time")
+        return "MISSÃO: FAÇA A MAIOR PONTUAÇÃO EM 90 SEGUNDOS";
+
+    return "MISSÃO: SOBREVIVA E DESTRUA AS AMEAÇAS";
+
+}
+
+/* =========================================================
    RESET
-   ============================================================ */
+========================================================= */
+
+function clearArrayObjects(
+    array
+){
+
+    for(
+        const item of array
+    ){
+
+        if(item.mesh)
+            scene.remove(
+                item.mesh
+            );
+
+    }
+
+    array.length = 0;
+
+}
 
 function resetGame(){
 
+    clearArrayObjects(
+        bullets
+    );
+
+    clearArrayObjects(
+        obstacles
+    );
+
+    clearArrayObjects(
+        particles
+    );
+
+    clearArrayObjects(
+        powerups
+    );
+
     score = 0;
+
     health = 100;
-    lives = 3;
+
+    const diff =
+        difficultyConfig[
+            selectedDifficulty
+        ];
+
+    lives =
+        diff.lives;
+
     combo = 1;
-    distance = 0;
+    maxCombo = 1;
+
     elapsed = 0;
+    distance = 0;
+
     destroyedCount = 0;
-    baseSpeed = 45;
 
-    bullets.forEach(
-        b=>scene.remove(b.mesh)
-    );
+    fireCooldown = 0;
 
-    obstacles.forEach(
-        o=>scene.remove(o.mesh)
-    );
+    spawnTimer = .5;
 
-    particles.forEach(
-        p=>scene.remove(p.mesh)
-    );
+    powerupTimer = 12;
 
-    bullets.length = 0;
-    obstacles.length = 0;
-    particles.length = 0;
+    configureMode();
 
     airplane.position.set(
         0,
@@ -1483,41 +3590,66 @@ function resetGame(){
     );
 
     updateHUD();
+
 }
 
-/* ============================================================
-   MOVEMENT
-   ============================================================ */
+/* =========================================================
+   PLANE MOVEMENT
+========================================================= */
 
-function updatePlane(delta){
+function updatePlane(
+    delta
+){
 
     let x = 0;
     let y = 0;
 
-    if(keys["KeyA"] || keys["ArrowLeft"])
+    if(
+        keys["KeyA"] ||
+        keys["ArrowLeft"]
+    ){
         x -= 1;
+    }
 
-    if(keys["KeyD"] || keys["ArrowRight"])
+    if(
+        keys["KeyD"] ||
+        keys["ArrowRight"]
+    ){
         x += 1;
+    }
 
-    if(keys["KeyW"] || keys["ArrowUp"])
+    if(
+        keys["KeyW"] ||
+        keys["ArrowUp"]
+    ){
         y += 1;
+    }
 
-    if(keys["KeyS"] || keys["ArrowDown"])
+    if(
+        keys["KeyS"] ||
+        keys["ArrowDown"]
+    ){
         y -= 1;
+    }
 
     const turbo =
         keys["ShiftLeft"] ||
         keys["ShiftRight"];
 
     const moveSpeed =
-        turbo ? 30 : 20;
+        turbo
+            ? 31
+            : 20;
 
     airplane.position.x +=
-        x * moveSpeed * delta;
+        x*
+        moveSpeed*
+        delta;
 
     airplane.position.y +=
-        y * moveSpeed * delta;
+        y*
+        moveSpeed*
+        delta;
 
     airplane.position.x =
         THREE.MathUtils.clamp(
@@ -1547,32 +3679,40 @@ function updatePlane(delta){
             .12
         );
 
+    airplaneEngine.scale.z =
+        turbo
+            ? 1.45
+            : 1;
+
     airplaneLight.intensity =
-        turbo ? 10 : 5;
+        turbo
+            ? 11
+            : 6;
 
     if(turbo){
+
         unlockAchievement(
-            "turbo",
-            "Piloto de Alta Velocidade",
-            "Você ativou o turbo do AVIONECX."
+            "turbo"
         );
+
     }
+
 }
 
-/* ============================================================
-   SPAWN OBSTACLES
-   ============================================================ */
+/* =========================================================
+   OBSTACLE
+========================================================= */
 
 function spawnObstacle(){
 
-    const type =
+    const random =
         Math.random();
 
     let mesh;
-    let hp = 1;
-    let radius = 2;
+    let hp;
+    let radius;
 
-    if(type < .35){
+    if(random < .35){
 
         mesh =
             new THREE.Mesh(
@@ -1584,15 +3724,15 @@ function spawnObstacle(){
                     color:0x8a1028,
                     emissive:0x3d0010,
                     emissiveIntensity:1,
-                    metalness:.5,
-                    roughness:.3
+                    metalness:.55,
+                    roughness:.28
                 })
             );
 
         radius = 2.5;
         hp = 1;
 
-    }else if(type < .7){
+    }else if(random < .7){
 
         mesh =
             new THREE.Mesh(
@@ -1605,7 +3745,7 @@ function spawnObstacle(){
                     color:0x5c2aa8,
                     emissive:0x19004c,
                     emissiveIntensity:.8,
-                    metalness:.8,
+                    metalness:.82,
                     roughness:.2
                 })
             );
@@ -1627,18 +3767,19 @@ function spawnObstacle(){
                     color:0xff8a00,
                     emissive:0x5a2100,
                     emissiveIntensity:1,
-                    metalness:.7,
+                    metalness:.75,
                     roughness:.2
                 })
             );
 
         radius = 3;
         hp = 3;
+
     }
 
     mesh.position.set(
         (Math.random()-.5)*55,
-        -3 + Math.random()*22,
+        -3+Math.random()*22,
         -240
     );
 
@@ -1648,144 +3789,246 @@ function spawnObstacle(){
         Math.random()*3
     );
 
-    mesh.castShadow = true;
+    mesh.castShadow =
+        true;
 
-    scene.add(mesh);
+    scene.add(
+        mesh
+    );
+
+    const difficulty =
+        difficultyConfig[
+            selectedDifficulty
+        ];
 
     obstacles.push({
+
         mesh,
+
         hp,
+
         radius,
+
         speed:
             baseSpeed *
-            (.85 + Math.random()*.35),
+            (.85+Math.random()*.35) *
+            difficulty.speed,
+
         spin:
             (Math.random()-.5)*2
+
     });
+
 }
 
-/* ============================================================
+/* =========================================================
    UPDATE OBSTACLES
-   ============================================================ */
+========================================================= */
 
-function updateObstacles(delta){
+function updateObstacles(
+    delta
+){
 
-    spawnTimer -= delta;
+    spawnTimer -=
+        delta;
 
-    const spawnRate =
+    const difficulty =
+        difficultyConfig[
+            selectedDifficulty
+        ];
+
+    let spawnRate =
+        difficulty.spawn;
+
+    spawnRate =
         Math.max(
-            .28,
-            .9 - elapsed*.008
+            .25,
+            spawnRate -
+            elapsed*.004
         );
 
-    if(spawnTimer <= 0){
+    if(
+        selectedMode === "survival"
+    ){
+
+        spawnRate *=
+            Math.max(
+                .45,
+                1-elapsed/400
+            );
+
+    }
+
+    if(
+        selectedMode === "time"
+    ){
+
+        spawnRate *= .75;
+
+    }
+
+    if(
+        spawnTimer <= 0
+    ){
 
         spawnObstacle();
 
-        spawnTimer = spawnRate;
+        spawnTimer =
+            spawnRate;
+
     }
 
-    for(let i=obstacles.length-1;i>=0;i--){
+    for(
+        let i=obstacles.length-1;
+        i>=0;
+        i--
+    ){
 
-        const o = obstacles[i];
+        const obstacle =
+            obstacles[i];
 
-        o.mesh.position.z +=
-            o.speed * delta;
+        obstacle.mesh.position.z +=
+            obstacle.speed*
+            delta;
 
-        o.mesh.rotation.x +=
-            o.spin * delta;
+        obstacle.mesh.rotation.x +=
+            obstacle.spin*
+            delta;
 
-        o.mesh.rotation.y +=
-            o.spin * .7 * delta;
+        obstacle.mesh.rotation.y +=
+            obstacle.spin*
+            .7*
+            delta;
+
+        const collisionDistance =
+            obstacle.radius+1.65;
 
         if(
-            o.mesh.position.distanceTo(
+            obstacle.mesh.position.distanceTo(
                 airplane.position
-            ) < o.radius + 1.8
+            ) <
+            collisionDistance
         ){
 
-            impact(o);
+            impact(
+                obstacle
+            );
 
-            scene.remove(o.mesh);
+            scene.remove(
+                obstacle.mesh
+            );
 
-            obstacles.splice(i,1);
+            obstacles.splice(
+                i,
+                1
+            );
 
             continue;
+
         }
 
-        if(o.mesh.position.z > 30){
+        if(
+            obstacle.mesh.position.z >
+            30
+        ){
 
-            scene.remove(o.mesh);
+            scene.remove(
+                obstacle.mesh
+            );
 
-            obstacles.splice(i,1);
+            obstacles.splice(
+                i,
+                1
+            );
 
-            score += 5;
+            if(
+                selectedMode !==
+                "survival"
+            ){
+                score += 5;
+            }
 
             combo = 1;
+
         }
+
     }
+
 }
 
-/* ============================================================
+/* =========================================================
    SHOOT
-   ============================================================ */
+========================================================= */
 
 function shoot(){
 
-    if(!started || paused || gameEnded)
+    if(
+        !started ||
+        paused ||
+        gameEnded
+    )
         return;
 
-    if(fireCooldown > 0)
+    if(
+        fireCooldown > 0
+    )
         return;
 
-    fireCooldown = .16;
-
-    const geometry =
-        new THREE.SphereGeometry(
-            .16,
-            10,
-            10
-        );
-
-    const material =
-        new THREE.MeshBasicMaterial({
-            color:0x00eaff
-        });
+    fireCooldown =
+        .14;
 
     const mesh =
         new THREE.Mesh(
-            geometry,
-            material
+            new THREE.SphereGeometry(
+                .16,
+                10,
+                10
+            ),
+            new THREE.MeshBasicMaterial({
+                color:0x00eaff
+            })
         );
 
     mesh.position.copy(
         airplane.position
     );
 
-    mesh.position.z -= 4;
+    mesh.position.z -=
+        4;
 
-    const glow =
+    const light =
         new THREE.PointLight(
             0x00eaff,
             4,
             8
         );
 
-    mesh.add(glow);
+    mesh.add(
+        light
+    );
 
-    scene.add(mesh);
+    scene.add(
+        mesh
+    );
 
     bullets.push({
+
         mesh,
-        speed:150
+
+        speed:
+            155
+
     });
+
 }
 
-/* ============================================================
-   UPDATE BULLETS
-   ============================================================ */
+/* =========================================================
+   BULLETS
+========================================================= */
 
-function updateBullets(delta){
+function updateBullets(
+    delta
+){
 
     fireCooldown =
         Math.max(
@@ -1793,86 +4036,136 @@ function updateBullets(delta){
             fireCooldown-delta
         );
 
-    for(let i=bullets.length-1;i>=0;i--){
+    for(
+        let i=bullets.length-1;
+        i>=0;
+        i--
+    ){
 
-        const b = bullets[i];
+        const bullet =
+            bullets[i];
 
-        b.mesh.position.z -=
-            b.speed*delta;
+        bullet.mesh.position.z -=
+            bullet.speed*
+            delta;
 
-        let removed = false;
+        let destroyedBullet =
+            false;
 
-        for(let j=obstacles.length-1;j>=0;j--){
+        for(
+            let j=obstacles.length-1;
+            j>=0;
+            j--
+        ){
 
-            const o = obstacles[j];
+            const obstacle =
+                obstacles[j];
 
-            const d =
-                b.mesh.position.distanceTo(
-                    o.mesh.position
+            const distance =
+                bullet.mesh.position.distanceTo(
+                    obstacle.mesh.position
                 );
 
-            if(d < o.radius + .4){
+            if(
+                distance <
+                obstacle.radius+.4
+            ){
 
-                o.hp--;
+                obstacle.hp--;
 
-                createExplosion(
-                    o.mesh.position,
-                    0x00eaff,
-                    8
-                );
+                if(
+                    effectsEnabled
+                ){
+
+                    createExplosion(
+                        obstacle.mesh.position,
+                        0x00eaff,
+                        8
+                    );
+
+                }
 
                 scene.remove(
-                    b.mesh
+                    bullet.mesh
                 );
 
-                bullets.splice(i,1);
+                bullets.splice(
+                    i,
+                    1
+                );
 
-                removed = true;
+                destroyedBullet =
+                    true;
 
-                if(o.hp <= 0){
+                if(
+                    obstacle.hp <= 0
+                ){
 
                     destroyObstacle(
                         j
                     );
+
                 }
 
                 break;
+
             }
+
         }
 
-        if(removed)
+        if(
+            destroyedBullet
+        )
             continue;
 
         if(
-            b.mesh.position.z < -500
+            bullet.mesh.position.z <
+            -500
         ){
 
             scene.remove(
-                b.mesh
+                bullet.mesh
             );
 
-            bullets.splice(i,1);
+            bullets.splice(
+                i,
+                1
+            );
+
         }
+
     }
+
 }
 
-/* ============================================================
+/* =========================================================
    DESTROY
-   ============================================================ */
+========================================================= */
 
-function destroyObstacle(index){
+function destroyObstacle(
+    index
+){
 
-    const o =
+    const obstacle =
         obstacles[index];
 
-    createExplosion(
-        o.mesh.position,
-        0xff4d78,
-        22
-    );
+    if(!obstacle)
+        return;
+
+    if(
+        effectsEnabled
+    ){
+
+        createExplosion(
+            obstacle.mesh.position,
+            0xff4d78,
+            24
+        );
+
+    }
 
     scene.remove(
-        o.mesh
+        obstacle.mesh
     );
 
     obstacles.splice(
@@ -1888,69 +4181,131 @@ function destroyObstacle(index){
             combo+1
         );
 
+    maxCombo =
+        Math.max(
+            maxCombo,
+            combo
+        );
+
+    const multiplier =
+        100*combo;
+
     score +=
-        100 * combo;
+        multiplier;
 
-    if(destroyedCount >= 1){
-        unlockAchievement(
-            "destroy1",
-            "Primeiro Impacto",
-            "Você destruiu seu primeiro obstáculo."
-        );
-    }
+    profile.kills++;
 
-    if(destroyedCount >= 10){
-        unlockAchievement(
-            "destroy10",
-            "Caçador de Obstáculos",
-            "Você destruiu 10 obstáculos."
-        );
-    }
+    addXP(
+        10+combo
+    );
 
-    if(destroyedCount >= 25){
+    if(
+        combo >= 10
+    )
         unlockAchievement(
-            "destroy25",
-            "Lenda do AVIONECX",
-            "Você destruiu 25 obstáculos."
+            "combo10"
         );
-    }
+
+    if(
+        combo >= 20
+    )
+        unlockAchievement(
+            "combo20"
+        );
+
+    if(
+        destroyedCount >= 1
+    )
+        unlockAchievement(
+            "destroy1"
+        );
+
+    if(
+        destroyedCount >= 10
+    )
+        unlockAchievement(
+            "destroy10"
+        );
+
+    if(
+        destroyedCount >= 25
+    )
+        unlockAchievement(
+            "destroy25"
+        );
+
+    if(
+        destroyedCount >= 50
+    )
+        unlockAchievement(
+            "destroy50"
+        );
+
 }
 
-/* ============================================================
+/* =========================================================
    IMPACT
-   ============================================================ */
+========================================================= */
 
-function impact(obstacle){
+function impact(){
 
-    health -= 35;
+    const difficulty =
+        difficultyConfig[
+            selectedDifficulty
+        ];
+
+    health -=
+        difficulty.damage;
 
     combo = 1;
 
-    shake = .8;
+    shake = .7;
 
-    flash = .4;
+    if(
+        vibrationEnabled &&
+        navigator.vibrate
+    ){
 
-    createExplosion(
-        airplane.position,
-        0xff315a,
-        30
-    );
+        navigator.vibrate(
+            [30,20,50]
+        );
+
+    }
+
+    if(
+        effectsEnabled
+    ){
+
+        createExplosion(
+            airplane.position,
+            0xff315a,
+            30
+        );
+
+    }
 
     showAnnouncement(
         "⚠ IMPACTO",
-        "O AVIONECX sofreu danos!"
+        "Sistemas danificados."
     );
 
-    if(health <= 0){
+    if(
+        health <= 0
+    ){
 
         lives--;
 
-        if(lives > 0){
+        if(
+            lives > 0
+        ){
 
             health = 100;
 
-            airplane.position.x = 0;
-            airplane.position.y = 4;
+            airplane.position.x =
+                0;
+
+            airplane.position.y =
+                4;
 
             showAnnouncement(
                 "SISTEMA RECUPERADO",
@@ -1960,15 +4315,18 @@ function impact(obstacle){
         }else{
 
             endGame();
+
         }
+
     }
 
     updateHUD();
+
 }
 
-/* ============================================================
-   EXPLOSIONS
-   ============================================================ */
+/* =========================================================
+   PARTICLES
+========================================================= */
 
 function createExplosion(
     position,
@@ -1976,12 +4334,26 @@ function createExplosion(
     amount
 ){
 
-    for(let i=0;i<amount;i++){
+    if(!effectsEnabled)
+        return;
+
+    amount =
+        Math.min(
+            amount,
+            35
+        );
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
         const mesh =
             new THREE.Mesh(
                 new THREE.SphereGeometry(
-                    .08 + Math.random()*.16,
+                    .08+
+                    Math.random()*.16,
                     6,
                     6
                 ),
@@ -1994,7 +4366,9 @@ function createExplosion(
             position
         );
 
-        scene.add(mesh);
+        scene.add(
+            mesh
+        );
 
         const velocity =
             new THREE.Vector3(
@@ -2004,129 +4378,389 @@ function createExplosion(
             );
 
         particles.push({
+
             mesh,
+
             velocity,
-            life:.4 + Math.random()*.8
+
+            life:
+                .4+
+                Math.random()*.8
+
         });
+
     }
+
 }
 
-/* ============================================================
-   PARTICLES
-   ============================================================ */
+function updateParticles(
+    delta
+){
 
-function updateParticles(delta){
+    for(
+        let i=particles.length-1;
+        i>=0;
+        i--
+    ){
 
-    for(let i=particles.length-1;i>=0;i--){
-
-        const p =
+        const particle =
             particles[i];
 
-        p.life -= delta;
+        particle.life -=
+            delta;
 
-        p.mesh.position.addScaledVector(
-            p.velocity,
+        particle.mesh.position.addScaledVector(
+            particle.velocity,
             delta
         );
 
-        p.velocity.multiplyScalar(
+        particle.velocity.multiplyScalar(
             .97
         );
 
-        p.mesh.scale.multiplyScalar(
+        particle.mesh.scale.multiplyScalar(
             .96
         );
 
-        if(p.life <= 0){
+        if(
+            particle.life <= 0
+        ){
 
             scene.remove(
-                p.mesh
+                particle.mesh
             );
 
             particles.splice(
                 i,
                 1
             );
+
         }
+
     }
+
 }
 
-/* ============================================================
+/* =========================================================
    RINGS
-   ============================================================ */
+========================================================= */
 
-function updateRings(delta){
+function updateRings(
+    delta
+){
 
-    rings.forEach(
-        ring=>{
+    for(
+        const ring of rings
+    ){
 
-            ring.position.z +=
-                baseSpeed*delta;
+        ring.position.z +=
+            baseSpeed*
+            delta;
 
-            ring.rotation.z +=
-                delta;
+        ring.rotation.z +=
+            delta;
 
-            if(
-                ring.position.z > 40
-            ){
+        if(
+            ring.position.z >
+            40
+        ){
 
-                ring.position.z =
-                    -500;
+            ring.position.z =
+                -500;
 
-                ring.position.x =
-                    (Math.random()-.5)*55;
+            ring.position.x =
+                (Math.random()-.5)*55;
 
-                ring.position.y =
-                    -3 + Math.random()*22;
-            }
+            ring.position.y =
+                -3+
+                Math.random()*22;
 
-            if(
-                ring.position.distanceTo(
-                    airplane.position
-                ) < 5.5
-            ){
-
-                score += 25;
-
-                ring.position.z =
-                    -500;
-
-                showAnnouncement(
-                    "CHECKPOINT",
-                    "+25 pontos"
-                );
-            }
         }
-    );
+
+        if(
+            ring.position.distanceTo(
+                airplane.position
+            ) <
+            5.5
+        ){
+
+            score +=
+                25;
+
+            addXP(
+                5
+            );
+
+            unlockAchievement(
+                "checkpoint"
+            );
+
+            ring.position.z =
+                -500;
+
+            showAnnouncement(
+                "CHECKPOINT",
+                "+25 pontos"
+            );
+
+        }
+
+    }
+
 }
 
-/* ============================================================
-   CAMERA
-   ============================================================ */
+/* =========================================================
+   POWERUPS
+========================================================= */
 
-function updateCamera(delta){
+function spawnPowerup(){
+
+    const type =
+        Math.random();
+
+    const color =
+        type < .33
+            ? 0x00ffb3
+            : type < .66
+                ? 0xffd166
+                : 0x00eaff;
+
+    const mesh =
+        new THREE.Mesh(
+            new THREE.OctahedronGeometry(
+                1.1,
+                1
+            ),
+            new THREE.MeshStandardMaterial({
+                color,
+                emissive:color,
+                emissiveIntensity:1.5,
+                metalness:.5,
+                roughness:.2
+            })
+        );
+
+    mesh.position.set(
+        (Math.random()-.5)*48,
+        -1+
+            Math.random()*17,
+        -250
+    );
+
+    scene.add(
+        mesh
+    );
+
+    powerups.push({
+
+        mesh,
+
+        type:
+            type < .33
+                ? "health"
+                : type < .66
+                    ? "score"
+                    : "shield",
+
+        speed:
+            baseSpeed*.85
+
+    });
+
+}
+
+function updatePowerups(
+    delta
+){
+
+    powerupTimer -=
+        delta;
+
+    if(
+        powerupTimer <= 0
+    ){
+
+        spawnPowerup();
+
+        powerupTimer =
+            12+
+            Math.random()*12;
+
+    }
+
+    for(
+        let i=powerups.length-1;
+        i>=0;
+        i--
+    ){
+
+        const powerup =
+            powerups[i];
+
+        powerup.mesh.position.z +=
+            powerup.speed*
+            delta;
+
+        powerup.mesh.rotation.x +=
+            delta*2;
+
+        powerup.mesh.rotation.y +=
+            delta*2;
+
+        if(
+            powerup.mesh.position.distanceTo(
+                airplane.position
+            ) <
+            2.4
+        ){
+
+            collectPowerup(
+                powerup
+            );
+
+            scene.remove(
+                powerup.mesh
+            );
+
+            powerups.splice(
+                i,
+                1
+            );
+
+            continue;
+
+        }
+
+        if(
+            powerup.mesh.position.z >
+            40
+        ){
+
+            scene.remove(
+                powerup.mesh
+            );
+
+            powerups.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+/* =========================================================
+   COLLECT POWERUP
+========================================================= */
+
+function collectPowerup(
+    powerup
+){
+
+    unlockAchievement(
+        "collector"
+    );
+
+    if(
+        powerup.type ===
+        "health"
+    ){
+
+        health =
+            Math.min(
+                100,
+                health+30
+            );
+
+        showAnnouncement(
+            "REPARO",
+            "+30 de integridade"
+        );
+
+    }
+
+    if(
+        powerup.type ===
+        "score"
+    ){
+
+        score +=
+            500;
+
+        addXP(
+            50
+        );
+
+        showAnnouncement(
+            "ENERGIA",
+            "+500 pontos"
+        );
+
+    }
+
+    if(
+        powerup.type ===
+        "shield"
+    ){
+
+        health =
+            Math.min(
+                100,
+                health+10
+            );
+
+        combo =
+            Math.min(
+                20,
+                combo+3
+            );
+
+        showAnnouncement(
+            "NÚCLEO EC-X",
+            "Combo aumentado."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(
+    delta
+){
 
     const target =
         airplane.position.clone();
 
-    target.z += 16;
-    target.y += 5;
+    target.z +=
+        16;
+
+    target.y +=
+        5;
 
     camera.position.lerp(
         target,
-        .08
+        .085
     );
 
     const look =
         airplane.position.clone();
 
-    look.z -= 25;
+    look.z -=
+        25;
 
     camera.lookAt(
         look
     );
 
-    if(shake > 0){
+    if(
+        shake > 0
+    ){
 
         camera.position.x +=
             (Math.random()-.5)*
@@ -2139,137 +4773,103 @@ function updateCamera(delta){
         shake =
             Math.max(
                 0,
-                shake-delta*2
+                shake-
+                delta*2.2
             );
+
     }
+
 }
 
-/* ============================================================
-   GAME UPDATE
-   ============================================================ */
+/* =========================================================
+   XP
+========================================================= */
 
-function updateGame(delta){
-
-    if(!started || paused || gameEnded)
-        return;
-
-    elapsed += delta;
-
-    distance +=
-        baseSpeed*delta;
-
-    baseSpeed =
-        Math.min(
-            105,
-            45 + elapsed*.45
-        );
-
-    score +=
-        Math.floor(
-            baseSpeed*
-            delta*
-            .25
-        );
-
-    updatePlane(delta);
-    updateBullets(delta);
-    updateObstacles(delta);
-    updateParticles(delta);
-    updateRings(delta);
-    updateCamera(delta);
-
-    if(elapsed >= 60){
-        unlockAchievement(
-            "survive60",
-            "Sobrevivente",
-            "Você sobreviveu por 60 segundos."
-        );
-    }
-
-    if(score >= 1000){
-        unlockAchievement(
-            "score1000",
-            "Piloto Promissor",
-            "Você alcançou 1.000 pontos."
-        );
-    }
-
-    if(score >= 5000){
-        unlockAchievement(
-            "score5000",
-            "Mestre do Céu",
-            "Você alcançou 5.000 pontos."
-        );
-    }
-
-    updateHUD();
-}
-
-/* ============================================================
-   HUD
-   ============================================================ */
-
-function updateHUD(){
-
-    scoreEl.textContent =
-        Math.floor(score);
-
-    speedEl.textContent =
-        Math.floor(baseSpeed*3.2) +
-        " KM/H";
-
-    livesEl.textContent =
-        "♥ ".repeat(
-            Math.max(0,lives)
-        );
-
-    comboEl.textContent =
-        "x"+combo;
-
-    healthBar.style.width =
-        Math.max(
-            0,
-            health
-        )+"%";
-}
-
-/* ============================================================
-   ACHIEVEMENTS
-   ============================================================ */
-
-function unlockAchievement(
-    key,
-    name,
-    description
+function addXP(
+    amount
 ){
 
-    if(achievements[key])
+    profile.xp +=
+        Math.max(
+            0,
+            Math.floor(amount)
+        );
+
+    const required =
+        profile.level*1000;
+
+    if(
+        profile.xp >=
+        required
+    ){
+
+        profile.xp -=
+            required;
+
+        profile.level++;
+
+        showAnnouncement(
+            "NOVO NÍVEL",
+            "Piloto EC-X nível "+
+            profile.level
+        );
+
+    }
+
+    saveProfile();
+
+}
+
+/* =========================================================
+   ACHIEVEMENTS
+========================================================= */
+
+function unlockAchievement(
+    key
+){
+
+    if(
+        profile.achievements[key]
+    )
         return;
 
-    achievements[key] = true;
+    const data =
+        achievements[key];
+
+    if(!data)
+        return;
+
+    profile.achievements[key] =
+        true;
+
+    saveProfile();
 
     achName.textContent =
-        name;
+        data.name;
 
     achDesc.textContent =
-        description;
+        data.desc;
 
-    achievement.classList.add(
+    achievementPopup.classList.add(
         "show"
     );
 
-    setTimeout(()=>{
-        achievement.classList.remove(
-            "show"
-        );
-    },4000);
+    setTimeout(
+        ()=>{
+            achievementPopup.classList.remove(
+                "show"
+            );
+        },
+        4000
+    );
+
 }
 
-/* ============================================================
+/* =========================================================
    ANNOUNCEMENT
-   ============================================================ */
+========================================================= */
 
-let announcementTimer;
+let announcementTimer = null;
 
 function showAnnouncement(
     title,
@@ -2291,106 +4891,444 @@ function showAnnouncement(
     );
 
     announcementTimer =
-        setTimeout(()=>{
-            announcement.classList.remove(
-                "show"
-            );
-        },2200);
+        setTimeout(
+            ()=>{
+                announcement.classList.remove(
+                    "show"
+                );
+            },
+            2300
+        );
+
 }
 
-/* ============================================================
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+    scoreEl.textContent =
+        Math.floor(
+            score
+        ).toLocaleString(
+            "pt-BR"
+        );
+
+    speedEl.textContent =
+        Math.floor(
+            baseSpeed*3.2
+        )+
+        " KM/H";
+
+    livesEl.textContent =
+        "♥ ".repeat(
+            Math.max(
+                0,
+                lives
+            )
+        ) ||
+        "—";
+
+    comboEl.textContent =
+        "x"+
+        combo;
+
+    healthBar.style.width =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                health
+            )
+        )+
+        "%";
+
+    if(
+        selectedMode === "time"
+    ){
+
+        missionEl.textContent =
+            "TEMPO: "+
+            Math.ceil(
+                remainingTime
+            )+
+            "s • PONTOS: "+
+            Math.floor(score);
+
+    }
+
+}
+
+/* =========================================================
+   GAME UPDATE
+========================================================= */
+
+function updateGame(
+    delta
+){
+
+    if(
+        !started ||
+        paused ||
+        gameEnded
+    )
+        return;
+
+    elapsed +=
+        delta;
+
+    distance +=
+        baseSpeed*
+        delta;
+
+    const difficulty =
+        difficultyConfig[
+            selectedDifficulty
+        ];
+
+    baseSpeed =
+        Math.min(
+            120,
+            45*
+            difficulty.speed+
+            elapsed*.45*
+            difficulty.speed
+        );
+
+    if(
+        selectedMode ===
+        "time"
+    ){
+
+        remainingTime -=
+            delta;
+
+        if(
+            remainingTime <= 0
+        ){
+
+            remainingTime = 0;
+
+            endGame();
+
+            return;
+
+        }
+
+    }
+
+    score +=
+        baseSpeed*
+        delta*
+        (
+            selectedMode ===
+            "survival"
+                ? .32
+                : .25
+        );
+
+    updatePlane(
+        delta
+    );
+
+    updateBullets(
+        delta
+    );
+
+    updateObstacles(
+        delta
+    );
+
+    updateParticles(
+        delta
+    );
+
+    updateRings(
+        delta
+    );
+
+    updatePowerups(
+        delta
+    );
+
+    updateCamera(
+        delta
+    );
+
+    if(
+        elapsed >= 60
+    )
+        unlockAchievement(
+            "survive60"
+        );
+
+    if(
+        elapsed >= 180
+    )
+        unlockAchievement(
+            "survive180"
+        );
+
+    if(
+        score >= 1000
+    )
+        unlockAchievement(
+            "score1000"
+        );
+
+    if(
+        score >= 5000
+    )
+        unlockAchievement(
+            "score5000"
+        );
+
+    if(
+        score >= 10000
+    )
+        unlockAchievement(
+            "score10000"
+        );
+
+    if(
+        selectedDifficulty ===
+        "insane" &&
+        elapsed >= 30
+    )
+        unlockAchievement(
+            "hard"
+        );
+
+    updateHUD();
+
+}
+
+/* =========================================================
    PAUSE
-   ============================================================ */
+========================================================= */
 
 function togglePause(){
 
-    if(!started || gameEnded)
+    if(
+        !started ||
+        gameEnded
+    )
         return;
 
-    paused = !paused;
+    paused =
+        !paused;
 
     pauseScreen.style.display =
-        paused ? "flex" : "none";
+        paused
+            ? "flex"
+            : "none";
 
     pauseButton.textContent =
         paused
             ? "▶ CONTINUAR"
             : "Ⅱ PAUSAR";
 
-    if(paused)
-        clock.getDelta();
+    clock.getDelta();
+
 }
 
-/* ============================================================
-   GAME OVER
-   ============================================================ */
+pauseButton.onclick =
+    togglePause;
 
-function endGame(){
+resumeButton.onclick =
+    togglePause;
 
-    gameEnded = true;
+quitButton.onclick =
+    ()=>{
+        returnToMenu();
+    };
 
-    if(score > highScore){
+/* =========================================================
+   RETURN MENU
+========================================================= */
 
-        highScore = Math.floor(score);
+function returnToMenu(){
 
-        localStorage.setItem(
-            "avionecxHighScore",
-            highScore
-        );
-    }
+    paused = false;
+    started = false;
+    gameEnded = false;
 
-    finalScore.innerHTML =
-        Math.floor(score) +
-        "<div style='font-size:12px;color:#71809a;margin-top:8px'>RECORDE: "+
-        highScore+
-        "</div>";
-
-    gameOver.style.display =
-        "flex";
-}
-
-/* ============================================================
-   RESTART
-   ============================================================ */
-
-function restartGame(){
+    pauseScreen.style.display =
+        "none";
 
     gameOver.style.display =
         "none";
 
-    paused = false;
-
-    gameEnded = false;
-
-    resetGame();
-
-    showAnnouncement(
-        "NOVA MISSÃO",
-        "AVIONECX reiniciado."
+    hud.classList.remove(
+        "active"
     );
+
+    menu.classList.remove(
+        "hide"
+    );
+
+    clearArrayObjects(
+        bullets
+    );
+
+    clearArrayObjects(
+        obstacles
+    );
+
+    clearArrayObjects(
+        particles
+    );
+
+    clearArrayObjects(
+        powerups
+    );
+
+    updateProfileUI();
+
 }
 
-/* ============================================================
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+function endGame(){
+
+    if(gameEnded)
+        return;
+
+    gameEnded = true;
+
+    profile.games++;
+
+    const final =
+        Math.floor(
+            score
+        );
+
+    if(
+        final >
+        profile.highScore
+    ){
+
+        profile.highScore =
+            final;
+
+    }
+
+    saveProfile();
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        final.toLocaleString(
+            "pt-BR"
+        );
+
+    document.getElementById(
+        "finalKills"
+    ).textContent =
+        destroyedCount;
+
+    document.getElementById(
+        "finalCombo"
+    ).textContent =
+        "x"+
+        maxCombo;
+
+    gameOver.style.display =
+        "flex";
+
+}
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+restartButton.onclick =
+    ()=>{
+
+        gameOver.style.display =
+            "none";
+
+        gameEnded = false;
+        paused = false;
+
+        resetGame();
+
+        showAnnouncement(
+            "NOVA MISSÃO",
+            "AVIONECX reiniciado."
+        );
+
+    };
+
+gameMenuButton.onclick =
+    ()=>{
+        returnToMenu();
+    };
+
+/* =========================================================
    RESIZE
-   ============================================================ */
+========================================================= */
 
 function resize(){
 
+    if(
+        !camera ||
+        !renderer
+    )
+        return;
+
+    const width =
+        Math.max(
+            1,
+            innerWidth
+        );
+
+    const height =
+        Math.max(
+            1,
+            innerHeight
+        );
+
     camera.aspect =
-        innerWidth /
-        innerHeight;
+        width/
+        height;
 
     camera.updateProjectionMatrix();
 
     renderer.setSize(
-        innerWidth,
-        innerHeight
+        width,
+        height,
+        false
     );
+
+    const quality =
+        document.getElementById(
+            "qualitySelect"
+        )?.value ||
+        "medium";
+
+    let pixelRatio =
+        quality === "low"
+            ? 1
+            : quality === "high"
+                ? 2
+                : 1.5;
+
+    renderer.setPixelRatio(
+        Math.min(
+            devicePixelRatio,
+            pixelRatio
+        )
+    );
+
 }
 
-/* ============================================================
-   LOOP
-   ============================================================ */
+/* =========================================================
+   RENDER LOOP
+========================================================= */
 
 function animate(){
 
@@ -2398,33 +5336,96 @@ function animate(){
         animate
     );
 
-    const delta =
+    const now =
+        performance.now();
+
+    if(
+        !lastFrameTime
+    ){
+        lastFrameTime =
+            now;
+    }
+
+    let delta =
+        (now-lastFrameTime)/
+        1000;
+
+    lastFrameTime =
+        now;
+
+    delta =
         Math.min(
-            clock.getDelta(),
+            delta,
             .05
         );
 
-    if(!paused && started){
+    if(
+        !paused &&
+        started
+    ){
 
-        updateGame(delta);
-
-        stars.forEach(
-            star=>{
-                star.rotation.y +=
-                    delta*.002;
-            }
+        updateGame(
+            delta
         );
+
+    }
+
+    for(
+        const star of stars
+    ){
+
+        star.rotation.y +=
+            delta*.002;
+
     }
 
     renderer.render(
         scene,
         camera
     );
+
 }
 
-/* ============================================================
-   INIT
-   ============================================================ */
+/* =========================================================
+   QUALITY
+========================================================= */
+
+document
+    .getElementById(
+        "qualitySelect"
+    )
+    .addEventListener(
+        "change",
+        resize
+    );
+
+/* =========================================================
+   START
+========================================================= */
+
+playButton.onclick =
+    startGame;
+
+/* =========================================================
+   BOOT ERROR HANDLER
+========================================================= */
+
+window.addEventListener(
+    "error",
+    event=>{
+
+        console.error(
+            "AVIONECX:",
+            event.error ||
+            event.message
+        );
+
+    }
+);
+
+/* =========================================================
+   BOOT
+========================================================= */
 
 try{
 
@@ -2437,14 +5438,28 @@ try{
         error
     );
 
-    loading.innerHTML =
-        "<div style='color:#ff4d78;font-size:20px;font-weight:bold'>"+
-        "ERRO AO CARREGAR AVIONECX"+
-        "</div>"+
-        "<div style='color:#8993ab;margin-top:10px'>"+
-        error.message+
-        "</div>";
+    loading.innerHTML = `
+        <div style="
+            color:#ff4d78;
+            font-size:20px;
+            font-weight:bold;
+            text-align:center;
+        ">
+            ERRO AO CARREGAR AVIONECX
+        </div>
+
+        <div style="
+            color:#8993ab;
+            margin-top:10px;
+            text-align:center;
+            max-width:80vw;
+        ">
+            ${String(error.message)}
+        </div>
+    `;
+
 }
+
 </script>
 
 </body>
